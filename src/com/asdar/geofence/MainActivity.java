@@ -90,7 +90,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		mLocationRequest = new LocationRequest().setPriority(
 				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(30000);
 		mInProgress = false;
-
+		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
+            int startidtemp = 0;
+            Editor editor = mPrefs.edit();
+            editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp);
+            editor.commit();
+        }
 		geofencestorage = new GeofenceStore(this);
 		currentGeofences = new ArrayList<Geofence>();
 		currentSimpleGeofences = new ArrayList<SimpleGeofence>();
