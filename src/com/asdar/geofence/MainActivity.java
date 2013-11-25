@@ -102,10 +102,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
-			currentGeofences.add(geofencestorage.getGeofence(i.toString(),
-					getApplicationContext()).toGeofence());
+			
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
 					i.toString(), getApplicationContext()));
+			Log.d("com.asdar.geofence","" +geofencestorage.getGeofence(i.toString(), getApplicationContext()).getmLoiteringDelay());
+			currentGeofences.add(geofencestorage.getGeofence(i.toString(),
+					getApplicationContext()).toGeofence());
 			// TODO debug string
 			System.out.println(geofencestorage.getGeofence(i.toString(),
 					getApplicationContext()).toString());

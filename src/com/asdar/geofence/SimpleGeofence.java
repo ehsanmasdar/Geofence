@@ -102,7 +102,7 @@ public class SimpleGeofence /*implements Parcelable */ {
                 .setTransitionTypes(mTransitionType)
                 .setCircularRegion(getLatitude(), getLongitude(), getRadius())
                 .setExpirationDuration(mExpirationDuration)
-                .setNotificationResponsiveness(mResponsiveness).build();
+                .setNotificationResponsiveness(mResponsiveness).setLoiteringDelay(mLoiteringDelay).build();
     }
 
     public String getName() {
