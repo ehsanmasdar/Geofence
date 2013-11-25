@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 
 import org.holoeverywhere.LayoutInflater;
+
 import org.holoeverywhere.widget.ArrayAdapter;
 import org.holoeverywhere.widget.TextView;
 

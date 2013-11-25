@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 
 import android.content.Context;
+
 import android.os.Bundle;
 import android.view.View;
 import org.holoeverywhere.app.Dialog;
@@ -18,7 +19,7 @@ public interface Action {
     public Dialog editDialog(Context context);
 
     public View addView(Context context, int position);
-    public Action generateSavedState(Context context, String id) throws DbxException;
+    public Action generateSavedState(Context context, String id);
     public String notificationText();
     public String description();
 }

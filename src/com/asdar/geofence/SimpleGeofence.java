@@ -1,10 +1,10 @@
 package com.asdar.geofence;
 
 import android.content.Context;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.dropbox.sync.android.DbxRecord;
 import com.google.android.gms.location.Geofence;
 
 public class SimpleGeofence /*implements Parcelable */ {
@@ -18,8 +18,10 @@ public class SimpleGeofence /*implements Parcelable */ {
     private long mExpirationDuration;
     private int mTransitionType;
     private int mResponsiveness;
+	private int mLoiteringDelay;
 
-    /**
+
+	/**
      * @param geofenceId The Geofence's request ID
      * @param latitude   Latitude of the Geofence's center.
      * @param longitude  Longitude of the Geofence's center.
@@ -40,22 +42,9 @@ public class SimpleGeofence /*implements Parcelable */ {
         this.mTransitionType = transition;
         this.mName = name;
         this.mAddress = address;
+        this.mLoiteringDelay = delay;
         this.mResponsiveness = responsiveness;
     }
-
-    public SimpleGeofence(DbxRecord dbxRecord, Context c) {
-        mId = dbxRecord.getString("mId");
-        mLongitude = dbxRecord.getDouble("mLongitude");
-        mLatitude = dbxRecord.getDouble("mLatitude");
-        mRadius = (float) dbxRecord.getDouble("mRadius");
-        mExpirationDuration = dbxRecord.getLong("mExpirationDuration");
-        mTransitionType = (int) dbxRecord.getLong("mTransitionType");
-        mName = dbxRecord.getString("mName");
-        Boolean[] b = new Boolean[1];
-        mAddress = dbxRecord.getString("mAddress");
-        this.mResponsiveness = (int) dbxRecord.getLong("mResponsiveness");
-    }
-
 
 	public int getmResponsiveness() {
 		return mResponsiveness;
@@ -168,4 +157,11 @@ public class SimpleGeofence /*implements Parcelable */ {
     }
 
 
+    public int getmLoiteringDelay() {
+		return mLoiteringDelay;
+	}
+
+	public void setmLoiteringDelay(int mLoiteringDelay) {
+		this.mLoiteringDelay = mLoiteringDelay;
+	}
 }

@@ -1,6 +1,7 @@
 package com.asdar.geofence;
 
 import android.annotation.TargetApi;
+
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,13 +14,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.dropbox.sync.android.DbxAccount;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxDatastore;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxRecord;
-import com.dropbox.sync.android.DbxTable;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 
@@ -31,12 +25,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
     /**
      * Sets an identifier for the service
      */
-    private DbxAccountManager mDbxAcctMgr;
-    private DbxDatastore store;
+   
     private GeofenceStore g;
     public static final boolean INVALID_BOOLEAN_VALUE = false;
-    private String APP_KEY;
-    private String APP_SECRET;
+
     private SharedPreferences mPrefs;
     // The name of the SharedPreferences
     private static final String SHARED_PREFERENCES = "SharedPreferences";
@@ -57,10 +49,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Log.d("com.asdar.geofence", "Recieved Geofence Trigger");
         mPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
-        APP_KEY = "a6kopt2el9go62x";
-        APP_SECRET = "r5nhykcj43f0rbj";
-        mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
-                APP_KEY, APP_SECRET);
+       
         if (LocationClient.hasError(intent)) {
             // Get the error code with a static method
             int errorCode = LocationClient.getErrorCode(intent);
@@ -90,7 +79,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 }
                 String notificationbuilder = "";
                 for (int i = 0; i < triggerIds.length; i++) {
-                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerIds[i], mDbxAcctMgr, mPrefs, getApplicationContext());
+                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerIds[i], mPrefs, getApplicationContext());
 
                     for (Action a : locallist) {
                         notificationbuilder = (a.notificationText()) + ", ";
@@ -179,15 +168,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     public String buildName(String id) throws IOException {
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            store = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
-            DbxTable geotable = store.getTable("Geofence");
-            String name = geotable.getOrInsert(id).getString("mName");
-            store.close();
-            return name;
-
-        } else {
             return mPrefs.getString(g.getGeofenceFieldKey(id, GeofenceUtils.KEY_NAME), GeofenceUtils.INVALID_STRING_VALUE);
-        }
+
     }
 }

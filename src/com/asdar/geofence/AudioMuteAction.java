@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 import android.content.Context;
 
+
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,12 +10,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-
-import com.dropbox.sync.android.DbxAccount;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxDatastore;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxTable;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
@@ -31,13 +26,13 @@ public class AudioMuteAction extends Activity implements Action {
 	private boolean AudioMute;
 	private LayoutInflater vi;
 	private SharedPreferences mPrefs;
-	private DbxDatastore store;
-	private DbxTable geotable;
 	private String APP_KEY;
 	private String APP_SECRET;
-	protected void onCreate (Bundle savedInstanceState){
+
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
+
 	public AudioMuteAction() {
 		AudioMute = false;
 	}
@@ -63,60 +58,45 @@ public class AudioMuteAction extends Activity implements Action {
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		APP_KEY = "a6kopt2el9go62x";
 		APP_SECRET = "r5nhykcj43f0rbj";
-		DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(context,
-				APP_KEY, APP_SECRET);
-		if (mDbxAcctMgr.hasLinkedAccount()) {
+		Editor editor = mPrefs.edit();
+		// Write the Geofence values to SharedPreferences
+		editor.putBoolean(GeofenceStore.getGeofenceFieldKey(id,
+				GeofenceUtils.KEY_AUDIO_MUTE), AudioMute);
+		editor.commit();
 
-			DbxAccount mDbxAcct = mDbxAcctMgr.getLinkedAccount();
-			try {
-				store = DbxDatastore.openDefault(mDbxAcct);
-				geotable = store.getTable("Geofence");
-				geotable.get(id).set("mAudioMute", AudioMute);
-				store.sync();
-				store.close();
-
-			} catch (DbxException e) {
-				e.printStackTrace();
-			}
-		} else {
-			Editor editor = mPrefs.edit();
-			// Write the Geofence values to SharedPreferences
-			editor.putBoolean(GeofenceStore.getGeofenceFieldKey(id,
-					GeofenceUtils.KEY_AUDIO_MUTE), AudioMute);
-			editor.commit();
-		}
 	}
-
 
 	@Override
 	public Dialog editDialog(Context context) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    	builder.setTitle("Set Options");
-    	builder.setNegativeButton("Mute", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				AudioMute= true;
-				AddGeofences.refreshAddAdapter();
-			}
-		});
-    	builder.setPositiveButton("Unmute", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				AudioMute = false;
-				AddGeofences.refreshAddAdapter();
-			}
-		});
-    	builder.setMessage("Would you like the Audio to be Muted or Unmuted when this location is reached?");
-    	builder.setCancelable(false);
-    	return builder.create();
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle("Set Options");
+		builder.setNegativeButton("Mute",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						AudioMute = true;
+						AddGeofences.refreshAddAdapter();
+					}
+				});
+		builder.setPositiveButton("Unmute",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						AudioMute = false;
+						AddGeofences.refreshAddAdapter();
+					}
+				});
+		builder.setMessage("Would you like the Audio to be Muted or Unmuted when this location is reached?");
+		builder.setCancelable(false);
+		return builder.create();
 	}
 
 	@Override
 	public View addView(Context context, int position) {
 		View v = new View(context);
-		
+
 		vi = LayoutInflater.from(context);
 		v = vi.inflate(R.layout.activity_add_actionlist);
 		if (v != null) {
@@ -134,31 +114,20 @@ public class AudioMuteAction extends Activity implements Action {
 				bt.setTypeface(Typeface.DEFAULT, 2);
 			}
 		}
-		
+
 		return v;
 	}
-	
 
 	@Override
 	public Action generateSavedState(Context context, String id)
-			throws DbxException {
+			 {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		APP_KEY = "a6kopt2el9go62x";
-		APP_SECRET = "r5nhykcj43f0rbj";
-		DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(context,
-				APP_KEY, APP_SECRET);
 		Boolean b = false;
-		if (mDbxAcctMgr.hasLinkedAccount()) {
-			store = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
-			DbxAccount mDbxAcct = mDbxAcctMgr.getLinkedAccount();
-			DbxTable geotable = store.getTable("Geofence");
-			b = geotable.getOrInsert(id).getBoolean("mAudioMute");
-			store.close();
-		} else {
-			b = mPrefs.getBoolean(GeofenceStore.getGeofenceFieldKey(id,
-					GeofenceUtils.KEY_AUDIO_MUTE), false);
-		}
+
+		b = mPrefs.getBoolean(GeofenceStore.getGeofenceFieldKey(id,
+				GeofenceUtils.KEY_AUDIO_MUTE), false);
+
 		return new AudioMuteAction(b);
 	}
 
@@ -174,7 +143,8 @@ public class AudioMuteAction extends Activity implements Action {
 	public void setAudioMute(boolean b) {
 		AudioMute = b;
 	}
-	public String description(){
+
+	public String description() {
 		return "Mute Audio";
 	}
 }

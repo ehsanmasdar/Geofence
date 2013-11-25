@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 import java.io.IOException;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,20 +27,11 @@ import org.holoeverywhere.widget.Toast;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.dropbox.sync.android.DbxAccount;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxDatastore;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxTable;
 import com.google.android.gms.location.Geofence;
 
 
 public class EditGeofences extends Activity {
     private Integer idglob;
-    private DbxAccountManager mDbxAcctMgr;
-    private DbxDatastore store;
-    private DbxAccount mDbxAcct;
-    private DbxTable geotable;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,19 +39,7 @@ public class EditGeofences extends Activity {
         Intent i = getIntent();
         idglob = i.getIntExtra("id", 0);
         String APP_SECRET = "r5nhykcj43f0rbj";
-        mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
-                APP_KEY, APP_SECRET);
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            try {
-                mDbxAcct = mDbxAcctMgr.getLinkedAccount();
-                store = DbxDatastore.openDefault(mDbxAcct);
-                store.sync();
-            } catch (DbxException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            geotable = store.getTable("Geofence");
-        }
+        
         setContentView(R.layout.activity_edit);
         try {
             populate();
@@ -69,11 +49,7 @@ public class EditGeofences extends Activity {
     }
 
     public void populate() throws IOException {
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (!store.isOpen()) {
-                store = DbxDatastore.openDefault(mDbxAcct);
-            }
-        }
+      
         EditText addressedit = (EditText) findViewById(R.id.Addressedit);
         EditText radiusedit = (EditText) findViewById(R.id.Radiusedit);
         EditText nameedit = (EditText) findViewById(R.id.NameEdit);
@@ -82,19 +58,6 @@ public class EditGeofences extends Activity {
         Geocoder geo = new Geocoder(getBaseContext());
         List<Address> a = new ArrayList<Address>();
         String address = " ";
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            store.close();
-            if (!store.isOpen()) {
-                store = DbxDatastore.openDefault(mDbxAcct);
-            }
-            address = geotable.get(idglob.toString()).getString("mAddress");
-
-            Integer f = (int) geotable.getOrInsert(idglob.toString()).getDouble(
-                    "mRadius");
-            radiusedit.setText(f.toString(), EditText.BufferType.EDITABLE);
-            nameedit.setText(geotable.getOrInsert(idglob.toString()).getString("mName"), TextView.BufferType.EDITABLE);
-            store.close();
-        } else {
             SharedPreferences mPrefs = (SharedPreferences) getBaseContext()
                     .getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,
                             Context.MODE_PRIVATE);
@@ -110,20 +73,14 @@ public class EditGeofences extends Activity {
             radiusedit.setText(f.toString(), EditText.BufferType.EDITABLE);
             nameedit.setText(mPrefs.getString(geostore.getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_NAME), GeofenceUtils.INVALID_STRING_VALUE), TextView.BufferType.EDITABLE);
 
-        }
+        
 
         addressedit.setText(address, EditText.BufferType.EDITABLE);
 
     }
 
     public void commit() throws IOException {
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (!store.isOpen()) {
-                store = DbxDatastore.openDefault(mDbxAcct);
-
-            }
-            geotable = store.getTable("Geofence");
-        }
+     
         SharedPreferences mPrefs = (SharedPreferences) getBaseContext().getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
         EditText addressedit = (EditText) findViewById(R.id.Addressedit);
@@ -140,7 +97,7 @@ public class EditGeofences extends Activity {
             DialogFragment alert = ErrorThrower.newInstance("Address not Found", false);
             alert.show(getSupportFragmentManager(), "editerror");
 
-        } else if (!mDbxAcctMgr.hasLinkedAccount()) {
+        } else {
 
             GeofenceStore geofencestorage = new GeofenceStore(this);
             Switch[] sw = new Switch[GeofenceUtils.ActionNum];
@@ -155,30 +112,7 @@ public class EditGeofences extends Activity {
             geofencestorage.setGeofence(idglob.toString(), g);
             finish();
 
-        } else {
-
-
-            geotable.getOrInsert(idglob.toString())
-                    .set("mId", idglob.toString())
-                    .set("mName", namedit.getText().toString())
-                    .set("mAddress", buildAddress(s.get(0).getLatitude(), s.get(0).getLongitude()))
-                    .set("mLatitude", s.get(0).getLatitude())
-                    .set("mLongitude", s.get(0).getLongitude())
-                    .set("mRadius",
-                            Double.parseDouble(radiusedit.getText()
-                                    .toString()))
-                    .set("mExpirationDuration", Geofence.NEVER_EXPIRE)
-                    .set("mTransitionType",
-                            Geofence.GEOFENCE_TRANSITION_ENTER
-                                    | Geofence.GEOFENCE_TRANSITION_EXIT);
-            Switch[] sw = new Switch[GeofenceUtils.ActionNum];
-            sw[0] = (Switch) findViewById(R.id.EditSwitch1);
-            Boolean[] b = new Boolean[GeofenceUtils.ActionNum];
-            b[0] = sw[0].isChecked();
-            store.sync();
-            store.close();
-            finish();
-        }
+        } 
     }
 
     public String buildAddress(Double latitude, Double logitude) throws IOException {
@@ -195,37 +129,20 @@ public class EditGeofences extends Activity {
     }
 
     public void onBackPressed() {
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (store.isOpen()) {
-                store.close();
-            }
-        }
+       
 
         finish();
     }
 
     protected void onPause() {
         super.onPause();
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (store.isOpen()) {
-                store.close();
-            }
-        }
+       
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-
-            try {
-                if (!store.isOpen()) {
-                    store = DbxDatastore.openDefault(mDbxAcct);
-                }
-            } catch (DbxException e) {
-                e.printStackTrace();
-            }
-        }
+       
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

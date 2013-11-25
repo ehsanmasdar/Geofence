@@ -17,7 +17,7 @@
     <string name="audiomute">Audio Mute</string>
     <string name="newname">New Name</string>
     <string name="confirm_edit_geofence">Confirm Edit</string>
-    <string name="DropboxLink">Link Dropbox Account</string>
+    <string name="DropboxLink">Link Dropbox Account-NOT IMPLEMENTED</string>
     <string name="DroboxLinkSum">Sync Data and Settings Between Multiple Devices using the Dropbox
         Datastore Api. Requires a Dropbox Account.
     </string>

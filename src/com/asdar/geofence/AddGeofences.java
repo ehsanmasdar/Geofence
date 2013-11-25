@@ -1,6 +1,7 @@
 package com.asdar.geofence;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,18 +28,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.dropbox.sync.android.DbxAccount;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxDatastore;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxTable;
 import com.google.android.gms.location.Geofence;
 
 public class AddGeofences extends Activity {
-    private DbxAccountManager mDbxAcctMgr;
-    private DbxDatastore store;
-    private DbxAccount mDbxAcct;
-    private DbxTable geotable;
     private SharedPreferences mPrefs;
     private static ActionAdapter addadapter;
     private ListView addListView;
@@ -52,18 +44,7 @@ public class AddGeofences extends Activity {
                 Context.MODE_PRIVATE);
         String APP_KEY = "a6kopt2el9go62x";
         String APP_SECRET = "r5nhykcj43f0rbj";
-        mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
-                APP_KEY, APP_SECRET);
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-
-            mDbxAcct = mDbxAcctMgr.getLinkedAccount();
-            try {
-                store = DbxDatastore.openDefault(mDbxAcct);
-                geotable = store.getTable("Geofence");
-            } catch (DbxException e) {
-                e.printStackTrace();
-            }
-        }
+  
         setContentView(R.layout.activity_add);
         actionlist = new ArrayList<Action>();
         addadapter = new ActionAdapter(getBaseContext(), R.layout.activity_add_actionlist, actionlist);
@@ -175,37 +156,20 @@ public class AddGeofences extends Activity {
     }
 
     public void onBackPressed() {
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (store.isOpen()) {
-                store.close();
-            }
-        }
+     
         setResult(-1);
         finish();
     }
 
     protected void onPause() {
         super.onPause();
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-            if (store.isOpen()) {
-                store.close();
-            }
-        }
+       
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mDbxAcctMgr.hasLinkedAccount()) {
-
-            try {
-                if (!store.isOpen()) {
-                    store = DbxDatastore.openDefault(mDbxAcct);
-                }
-            } catch (DbxException e) {
-                e.printStackTrace();
-            }
-        }
+      
     }
 
     public class CommitTask extends AsyncTask<String, String, String> {
@@ -216,16 +180,7 @@ public class AddGeofences extends Activity {
         }
 
         protected String doInBackground(String[] paramArrayOfString) {
-            if (mDbxAcctMgr.hasLinkedAccount()) {
-                if (!store.isOpen()) {
-                    try {
-                        store = DbxDatastore.openDefault(mDbxAcct);
-                    } catch (DbxException e) {
-                        e.printStackTrace();
-                    }
-                }
-                geotable = store.getTable("Geofence");
-            }
+
             EditText addressedit = (EditText) findViewById(R.id.Addressedit);
             EditText radiusedit = (EditText) findViewById(R.id.Radiusedit);
             EditText namedit = (EditText) findViewById(R.id.NameAdd);
@@ -239,7 +194,6 @@ public class AddGeofences extends Activity {
             }
             Integer startidtemp = 0;
             Editor editor = mPrefs.edit();
-            if (!mDbxAcctMgr.hasLinkedAccount()) {
                 try {
                 GeofenceStore geofencestorage = new GeofenceStore(AddGeofences.this);
                  startidtemp = mPrefs.getInt(
@@ -257,35 +211,7 @@ public class AddGeofences extends Activity {
                     e.printStackTrace();
                 }
 
-            } else {
-                try {
-                     startidtemp = (int) geotable.get("-1").getDouble("mStartId");
-                    geotable.getOrInsert(startidtemp.toString())
-                            .set("mId", startidtemp.toString())
-                            .set("mName", namedit.getText().toString())
-                            .set("mAddress", buildAddress(s.get(0).getLatitude(), s.get(0).getLongitude()))
-                            .set("mLatitude", s.get(0).getLatitude())
-                            .set("mLongitude", s.get(0).getLongitude())
-                            .set("mRadius",
-                                    (double) Long.parseLong(radiusedit.getText()
-                                            .toString()))
-                            .set("mExpirationDuration", Geofence.NEVER_EXPIRE)
-                            .set("mTransitionType",
-                                    Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT )
-                    		.set("mLoiteringDelay" , 60000 )
-                    		.set("mResponsiveness" , 0);
-                    geotable.get("-1").set("mStartId",
-                            geotable.get("-1").getDouble("mStartId") + 1);
-                    store.sync();
-                    store.close();
-                    GeofenceUtils.save(actionlist, mDbxAcctMgr, startidtemp.toString());
-
-                } catch (DbxException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+             
             for (Action a : actionlist) {
                 a.commit(getApplicationContext(),startidtemp.toString());
             }

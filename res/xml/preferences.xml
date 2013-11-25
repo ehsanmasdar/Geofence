@@ -7,9 +7,6 @@
                 android:key="pref_dropbox_link"
                 android:defaultValue="false"
                 >
-    <intent
-            android:targetPackage="com.asdar.geofence"
-            android:targetClass="com.asdar.geofence.DropboxHelper" />
     </CheckBoxPreference>
 
 </PreferenceScreen>

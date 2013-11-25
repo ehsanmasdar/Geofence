@@ -4,7 +4,6 @@ package com.asdar.geofence;
  * Created by Ehsan on 8/23/13.
  */
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+
 
 
 /**

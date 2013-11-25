@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 
 import org.holoeverywhere.app.AlertDialog;
+
 import org.holoeverywhere.app.Dialog;
 import org.holoeverywhere.app.DialogFragment;
 import org.holoeverywhere.widget.Toast;

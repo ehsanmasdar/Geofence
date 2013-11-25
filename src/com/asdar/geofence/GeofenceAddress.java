@@ -2,6 +2,7 @@ package com.asdar.geofence;
 
 import android.location.Address;
 
+
 public class GeofenceAddress implements Comparable<Object> {
     private double distance;
     private Address address;

@@ -1,6 +1,7 @@
 package com.asdar.geofence;
 
 import android.content.res.Resources;
+
 import android.os.Bundle;
 
 import org.holoeverywhere.preference.Preference;
