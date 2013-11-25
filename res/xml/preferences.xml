@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:holo="http://schemas.android.com/apk/res-auto">
+    <CheckBoxPreference android:title="@string/DropboxLink"
+                android:summary="@string/DroboxLinkSum"
+                android:key="pref_dropbox_link"
+                android:defaultValue="false"
+                >
+    <intent
+            android:targetPackage="com.asdar.geofence"
+            android:targetClass="com.asdar.geofence.DropboxHelper" />
+    </CheckBoxPreference>
+
+</PreferenceScreen>
