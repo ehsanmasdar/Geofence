@@ -60,6 +60,7 @@ public final class GeofenceUtils {
 	public static final boolean INVALID_BOOLEAN_VALUE = false;
 	public static final String INVALID_STRING_VALUE = null;
 	public static final String SHARED_PREFERENCES = "SharedPreferences";
+	public static final String KEY_BRIGHTNESS = "com.asdar.geofence.KEY_BRIGHTNESS";
 
 	public static void update(ArrayAdapter arrayAdapter,
 			ArrayList<SimpleGeofence> listOfObject) {

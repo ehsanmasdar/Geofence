@@ -35,10 +35,8 @@ public class EditGeofences extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String APP_KEY = "a6kopt2el9go62x";
         Intent i = getIntent();
         idglob = i.getIntExtra("id", 0);
-        String APP_SECRET = "r5nhykcj43f0rbj";
         
         setContentView(R.layout.activity_edit);
         try {
