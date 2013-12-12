@@ -5,6 +5,7 @@ package com.asdar.geofence;
  */
 
 import android.view.View;
+
 import android.view.ViewGroup;
 
 import org.holoeverywhere.LayoutInflater;

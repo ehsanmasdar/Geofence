@@ -113,13 +113,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					getApplicationContext()).toString());
 		}
 
+		setContentView(R.layout.activity_main);
 		CharSequence text = "startid"
 				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
 		int duration = Toast.LENGTH_SHORT;
 		Toast toast = Toast.makeText(getBaseContext(), text, duration);
 		toast.show();
-
-		setContentView(R.layout.activity_main);
 		eventlistadapter = new EventList(getBaseContext(),
 				R.layout.activity_main_listrow, currentSimpleGeofences);
 		listView = (ListView) findViewById(R.id.cardListView);

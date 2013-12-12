@@ -1,14 +1,10 @@
 package com.asdar.geofence;
 
 
-import android.content.Context;
-
-import android.os.Bundle;
-import android.view.View;
 import org.holoeverywhere.app.Dialog;
-import org.holoeverywhere.app.DialogFragment;
 
-import com.dropbox.sync.android.DbxException;
+import android.content.Context;
+import android.view.View;
 
 public interface Action {
     public void execute(Context context);
