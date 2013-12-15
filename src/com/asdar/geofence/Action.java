@@ -18,4 +18,5 @@ public interface Action {
     public Action generateSavedState(Context context, String id);
     public String notificationText();
     public String getDescription();
+	public String listText();
 }

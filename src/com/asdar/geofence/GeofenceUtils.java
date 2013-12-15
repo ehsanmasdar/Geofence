@@ -63,7 +63,7 @@ public final class GeofenceUtils {
 	public static final String KEY_BRIGHTNESS = "com.asdar.geofence.KEY_BRIGHTNESS";
 
 	public static void update(ArrayAdapter arrayAdapter,
-			ArrayList<SimpleGeofence> listOfObject) {
+			ArrayList<?> listOfObject) {
 		arrayAdapter.clear();
 		arrayAdapter.addAll(listOfObject);
 	}
@@ -153,7 +153,9 @@ public final class GeofenceUtils {
 							.equals("com.asdar.geofence.action")
 					&& !c.getName().toLowerCase()
 							.equals("com.asdar.geofence.actionadapter")
-					&& !c.getName().contains("$")) {
+					&& !c.getName().toLowerCase().equals("com.asdar.geofence.actionfragment")
+					&& !c.getName().contains("$"))
+			{
 				arr.add(c.getName());
 			}
 		}
@@ -208,6 +210,7 @@ public final class GeofenceUtils {
 							.equals("com.asdar.geofence.action")
 					&& !c.getName().toLowerCase()
 							.equals("com.asdar.geofence.actionadapter")
+					&& !c.getName().toLowerCase().equals("com.asdar.geofence.actionfragment")
 					&& !c.getName().contains("$")) {
 				try {
 					arr.add(((Action) (c.newInstance())).getDescription());

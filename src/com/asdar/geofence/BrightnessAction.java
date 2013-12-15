@@ -138,4 +138,10 @@ public class BrightnessAction extends Activity implements Action {
 	public String getDescription() {
 		return "Change Brightness";
 	}
+
+	@Override
+	public String listText() {
+		// TODO Auto-generated method stub
+		return "Brightness will changed to " + brightness;
+	}
 }
