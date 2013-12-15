@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView listView;
 	private boolean mInProgress;
 	private REQUEST_TYPE mRequestType;
-	private EventList eventlistadapter;
+	private EventListAdapter eventlistadapter;
 	private double upperRightLongitude;
 	private Location currentloc;
 	private GeofenceStore geofencestorage;
@@ -118,8 +118,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
 		int duration = Toast.LENGTH_SHORT;
 		Toast toast = Toast.makeText(getBaseContext(), text, duration);
-		toast.show();
-		eventlistadapter = new EventList(getBaseContext(),
+		//toast.show();
+		eventlistadapter = new EventListAdapter(getBaseContext(),
 				R.layout.activity_main_listrow, currentSimpleGeofences);
 		listView = (ListView) findViewById(R.id.cardListView);
 		listView.setAdapter(eventlistadapter);
@@ -181,16 +181,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onConnected(Bundle dataBundle) {
 		// TODO debug string
-		Log.d("com.asdar.geofence", " connected");
 		switch (mRequestType) {
-		case ADDONE:
-			mGeofencePendingIntent = getTransitionPendingIntent();
-			// Send a request to add a geofence
-			mLocationClient.addGeofences(currentGeofences,
-					mGeofencePendingIntent, this);
-			// TODO debug string
-			Log.d("com.asdar.geofence", "Added the Geofence");
-			break;
 		case ADD:
 			// Get the PendingIntent for the request
 			mGeofencePendingIntent = getTransitionPendingIntent();
@@ -325,34 +316,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}
 	}
 
-	public void addGeofence() {
-		// Start a request to add geofences
-		mRequestType = GeofenceUtils.REQUEST_TYPE.ADDONE;
-		/*
-		 * Test for Google Play services after setting the request type. If
-		 * Google Play services isn't present, the proper request can be
-		 * restarted.
-		 */
-		/*
-		 * Create a new location client object. Since the current activity class
-		 * implements ConnectionCallbacks and OnConnectionFailedListener, pass
-		 * the current activity object as the listener for both parameters
-		 */
-		mLocationClient = new LocationClient(this, this, this);
-		// If a request is not already underway
-		if (!mInProgress) {
-			// Indicate that a request is underway
-			mInProgress = true;
-			// Request a connection from the client to Location Services
-			mLocationClient.connect();
-		} else {
-			/*
-			 * A request is already underway. You can handle this situation by
-			 * disconnecting the client, re-setting the flag, and then re-trying
-			 * the request.
-			 */
-		}
-	}
+	
 
 	/*
 	 * public void mapopen(View view) throws IOException { EditText editText =
@@ -386,7 +350,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	public void addopen(View view) throws IOException {
 
 		Intent intent = new Intent(getBaseContext(), AddGeofences.class);
-		startActivityForResult(intent, GeofenceUtils.ADD_GEOFENCE_REQUEST);
+		startActivity(intent);
 	}
 
 	private List<GeofenceAddress> getClosest(List<Address> results2) {
@@ -583,22 +547,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		return true;
 	}
 
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		locallist = new ArrayList<SimpleGeofence>();
-		if (requestCode == GeofenceUtils.ADD_GEOFENCE_REQUEST) {
-			if (resultCode >= 0) {
-				Log.d("com.asdar.geofence",
-						"Got result code from AddGeofences!" + "It is: "
-								+ resultCode);
-				GeofenceStore gs = new GeofenceStore(getApplicationContext());
-				SimpleGeofence g = gs.getGeofence("" + resultCode,
-						getApplicationContext());
-				locallist.add(g);
-
-				addGeofence();
-			}
-		}
-	}
 
 	/*
 	 * public void onDialogClick0(DialogFragment dialog, final int selection)

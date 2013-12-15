@@ -17,5 +17,5 @@ public interface Action {
     public View addView(Context context, int position);
     public Action generateSavedState(Context context, String id);
     public String notificationText();
-    public String description();
+    public String getDescription();
 }

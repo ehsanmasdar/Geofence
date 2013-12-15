@@ -83,6 +83,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
                     for (Action a : locallist) {
                         notificationbuilder = (a.notificationText()) + ", ";
+                        
+                        if (notificationbuilder.length() >0){
+                        	notificationbuilder = notificationbuilder.substring(0,notificationbuilder.length()-2);
+                        }
                         a.execute(getApplicationContext());
                     }
                 }

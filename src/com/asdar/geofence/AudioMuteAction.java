@@ -144,7 +144,7 @@ public class AudioMuteAction extends Activity implements Action {
 		AudioMute = b;
 	}
 
-	public String description() {
+	public  String getDescription() {
 		return "Mute Audio";
 	}
 }

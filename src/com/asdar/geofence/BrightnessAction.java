@@ -3,6 +3,7 @@ package com.asdar.geofence;
 import android.content.Context;
 
 
+
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -11,7 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
-
+import android.provider.Settings.System;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.AlertDialog;
@@ -49,8 +50,8 @@ public class BrightnessAction extends Activity implements Action {
 		lp.screenBrightness = brightness;
 		getWindow().setAttributes(lp);
 		*/
-		android.provider.Settings.System.putInt(context.getContentResolver(),
-	    android.provider.Settings.System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
+        System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS_MODE, System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+		System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
 	}
 
 	@Override
@@ -134,7 +135,7 @@ public class BrightnessAction extends Activity implements Action {
 		brightness = b;
 	}
 
-	public String description() {
+	public String getDescription() {
 		return "Change Brightness";
 	}
 }

@@ -210,7 +210,7 @@ public final class GeofenceUtils {
 							.equals("com.asdar.geofence.actionadapter")
 					&& !c.getName().contains("$")) {
 				try {
-					arr.add(((Action) (c.newInstance())).description());
+					arr.add(((Action) (c.newInstance())).getDescription());
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
