@@ -9,15 +9,6 @@
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-           <ListView
-        		android:id="@+id/cardListView"
-       			 android:layout_marginLeft="16dp"
-       			 android:layout_marginRight="16dp"
-        		android:layout_width="fill_parent"
-       			 android:layout_height="fill_parent"
-        		android:divider="@null"
-        		android:dividerHeight="0dp">
-    	</ListView>
     </FrameLayout>
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"

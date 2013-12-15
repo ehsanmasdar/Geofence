@@ -153,7 +153,9 @@ public final class GeofenceUtils {
 							.equals("com.asdar.geofence.action")
 					&& !c.getName().toLowerCase()
 							.equals("com.asdar.geofence.actionadapter")
-					&& !c.getName().contains("$")) {
+					&& !c.getName().toLowerCase().equals("com.asdar.geofence.actionfragment")
+					&& !c.getName().contains("$"))
+			{
 				arr.add(c.getName());
 			}
 		}

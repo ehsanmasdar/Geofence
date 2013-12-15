@@ -35,6 +35,8 @@ import com.google.android.gms.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.support.v4.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 
@@ -76,12 +78,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private List<Geofence> currentGeofences;
 	private SharedPreferences mPrefs;
 	private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+	private ListView mDrawerList;
 	private static final String SHARED_PREFERENCES = "SharedPreferences";
 	private ArrayList<SimpleGeofence> currentSimpleGeofences;
 	private LocationRequest mLocationRequest;
 	private ArrayList<SimpleGeofence> locallist;
 	private int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+	private boolean homeFragment;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,68 +97,87 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(30000);
 		mInProgress = false;
 		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
-            int startidtemp = 0;
-            Editor editor = mPrefs.edit();
-            editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp);
-            editor.commit();
-        }
+			int startidtemp = 0;
+			Editor editor = mPrefs.edit();
+			editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp);
+			editor.commit();
+		}
 		geofencestorage = new GeofenceStore(this);
 		currentGeofences = new ArrayList<Geofence>();
 		currentSimpleGeofences = new ArrayList<SimpleGeofence>();
-
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
-			
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
 					i.toString(), getApplicationContext()));
-			currentGeofences.add(geofencestorage.getGeofence(i.toString(),
-					getApplicationContext()).toGeofence());
+			currentGeofences.add(geofencestorage.getGeofence(
+					i.toString(), getApplicationContext()).toGeofence());
 		}
 
 		CharSequence text = "startid"
 				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
 		int duration = Toast.LENGTH_SHORT;
 		Toast toast = Toast.makeText(getBaseContext(), text, duration);
-		//toast.show();
-		//show layout
+		// toast.show();
+		// show layout
 		setContentView(R.layout.activity_main);
-		//Initialize drawer
-    	OnItemClickListener drawerItemClick = new OnItemClickListener() {
+		// Initialize drawer
+		OnItemClickListener drawerItemClick = new OnItemClickListener() {
 			@Override
 			public void onItemClick(android.widget.AdapterView<?> adapterView,
 					View view, int i, long l) {
-				
+				swapFragment(i - 1);
 			}
 		};
+
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		ArrayList<String> draweritems = new ArrayList<String>();
-		draweritems.add("Home"); 
-		for (int i = 0; i < currentSimpleGeofences.size(); i++){
+		draweritems.add("Home");
+		for (int i = 0; i < currentSimpleGeofences.size(); i++) {
 			draweritems.add(currentSimpleGeofences.get(i).getName());
 		}
-		ArrayAdapter<String> a = new ArrayAdapter<String> (this,R.layout.drawer_list_item,draweritems);
+		ArrayAdapter<String> a = new ArrayAdapter<String>(this,
+				R.layout.drawer_list_item, draweritems);
 		mDrawerList.setAdapter(a);
-        mDrawerList.setOnItemClickListener(drawerItemClick);
-        //Initialize listview
-		OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-			@Override
-			public void onItemClick(android.widget.AdapterView<?> adapterView,
-					View view, int i, long l) {
-
-				Intent intent = new Intent(getBaseContext(),
-						EditGeofences.class);
-				intent.putExtra("id", i);
-				startActivity(intent);
-
-			}
-		};
-		listView = (ListView) findViewById(R.id.cardListView);
-		listView.setOnItemClickListener(mMessageClickedHandler);
-		eventlistadapter = new EventListAdapter(getBaseContext(),
-				R.layout.activity_main_listrow, currentSimpleGeofences);
-		listView.setAdapter(eventlistadapter);
+		mDrawerList.setOnItemClickListener(drawerItemClick);
+		swapFragment(-1);
 		addGeofences();
+	}
+
+	private void swapFragment(int i) {
+		if (i < 0) {
+			HomeFragment fragment = new HomeFragment();
+
+			// Insert the fragment by replacing any existing fragment
+			FragmentManager fragmentManager = getFragmentManager();
+			fragmentManager.beginTransaction()
+					.replace(R.id.content_frame, fragment).commit();
+			// Highlight the selected item, update the title, and close the
+			// drawer
+			mDrawerList.setItemChecked(i, true);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			homeFragment = true;
+			setTitle("Geofence");
+		}
+
+		else {
+			ActionFragment fragment = new ActionFragment();
+			Bundle args = new Bundle();
+			args.putInt("id", i);
+			fragment.setArguments(args);
+
+			// Insert the fragment by replacing any existing fragment
+			FragmentManager fragmentManager = getFragmentManager();
+			fragmentManager.beginTransaction()
+					.replace(R.id.content_frame, fragment).commit();
+			// Highlight the selected item, update the title, and close the
+			// drawer
+			mDrawerList.setItemChecked(i+1, true);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			Integer a = i;
+			setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a.toString(), getApplicationContext()).getName());
+
+		}
 	}
 
 	@Override
@@ -167,20 +189,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		regenerateList();
-	}
-
-	public void regenerateList() {
-		GeofenceStore ge = new GeofenceStore(this);
-		ArrayList<SimpleGeofence> localcurrentSimpleGeofences = new ArrayList<SimpleGeofence>();
-		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
-				-1); i++) {
-			localcurrentSimpleGeofences.add(ge.getGeofence(i.toString(),
-					getApplicationContext()));
-		}
-
-		GeofenceUtils.update(eventlistadapter, localcurrentSimpleGeofences);
-		eventlistadapter.notifyDataSetChanged();
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
@@ -331,8 +339,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			 */
 		}
 	}
-
-	
 
 	/*
 	 * public void mapopen(View view) throws IOException { EditText editText =
@@ -562,7 +568,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		return true;
 	}
-
 
 	/*
 	 * public void onDialogClick0(DialogFragment dialog, final int selection)
