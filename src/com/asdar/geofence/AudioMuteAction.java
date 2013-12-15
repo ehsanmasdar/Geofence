@@ -139,7 +139,14 @@ public class AudioMuteAction extends Activity implements Action {
 			return "Audio UnMuted";
 		}
 	}
-
+	@Override
+	public String listText() {
+		if (AudioMute) {
+			return "Audio Muted on entry";
+		} else {
+			return "Audio UnMuted on entry";
+		}
+	}
 	public void setAudioMute(boolean b) {
 		AudioMute = b;
 	}

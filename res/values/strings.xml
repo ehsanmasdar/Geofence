@@ -29,4 +29,6 @@
     <string name="Settings">Settings</string>
     <string name="Commit">Commit Changes</string>
     <string name="action_add">Add a Action</string>
+    <string name="drawer_open">Select Geofence</string>
+    <string name="drawer_close">Selected Geofence</string>
 </resources>

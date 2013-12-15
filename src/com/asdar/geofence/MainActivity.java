@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -86,6 +87,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private boolean homeFragment;
 	private ArrayAdapter<String> draweradapter;
 	private ArrayList<String> draweritems;
+	private ActionBarDrawerToggle mDrawerToggle;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (android.os.Build.VERSION.SDK_INT >= 9) {
@@ -131,6 +133,30 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_close  /* "close drawer" description */
+                ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(getTitle());
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle("Select Geofence");
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 		draweritems = new ArrayList<String>();
 		draweritems.add("Home");
 		for (int i = 0; i < currentSimpleGeofences.size(); i++) {
@@ -143,7 +169,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		swapFragment(-1);
 	}
 
-	private void swapFragment(int i) {
+	public void swapFragment(int i) {
 		if (i < 0) {
 			HomeFragment fragment = new HomeFragment();
 
@@ -178,7 +204,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		}
 	}
-
+	@Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
 	@Override
 	protected void onPause() {
 		super.onPause();
