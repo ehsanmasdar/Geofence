@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 
 import android.view.MenuInflater;
@@ -74,6 +75,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private GeofenceStore geofencestorage;
 	private List<Geofence> currentGeofences;
 	private SharedPreferences mPrefs;
+	private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 	private static final String SHARED_PREFERENCES = "SharedPreferences";
 	private ArrayList<SimpleGeofence> currentSimpleGeofences;
 	private LocationRequest mLocationRequest;
@@ -105,24 +108,36 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
 					i.toString(), getApplicationContext()));
-			Log.d("com.asdar.geofence","" +geofencestorage.getGeofence(i.toString(), getApplicationContext()).getmLoiteringDelay());
 			currentGeofences.add(geofencestorage.getGeofence(i.toString(),
 					getApplicationContext()).toGeofence());
-			// TODO debug string
-			System.out.println(geofencestorage.getGeofence(i.toString(),
-					getApplicationContext()).toString());
 		}
 
-		setContentView(R.layout.activity_main);
 		CharSequence text = "startid"
 				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
 		int duration = Toast.LENGTH_SHORT;
 		Toast toast = Toast.makeText(getBaseContext(), text, duration);
 		//toast.show();
-		eventlistadapter = new EventListAdapter(getBaseContext(),
-				R.layout.activity_main_listrow, currentSimpleGeofences);
-		listView = (ListView) findViewById(R.id.cardListView);
-		listView.setAdapter(eventlistadapter);
+		//show layout
+		setContentView(R.layout.activity_main);
+		//Initialize drawer
+    	OnItemClickListener drawerItemClick = new OnItemClickListener() {
+			@Override
+			public void onItemClick(android.widget.AdapterView<?> adapterView,
+					View view, int i, long l) {
+				
+			}
+		};
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		ArrayList<String> draweritems = new ArrayList<String>();
+		draweritems.add("Home"); 
+		for (int i = 0; i < currentSimpleGeofences.size(); i++){
+			draweritems.add(currentSimpleGeofences.get(i).getName());
+		}
+		ArrayAdapter<String> a = new ArrayAdapter<String> (this,R.layout.drawer_list_item,draweritems);
+		mDrawerList.setAdapter(a);
+        mDrawerList.setOnItemClickListener(drawerItemClick);
+        //Initialize listview
 		OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 			@Override
 			public void onItemClick(android.widget.AdapterView<?> adapterView,
@@ -130,15 +145,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 				Intent intent = new Intent(getBaseContext(),
 						EditGeofences.class);
-				// TODO debug string
-				System.out.println("pos" + i);
 				intent.putExtra("id", i);
 				startActivity(intent);
 
 			}
 		};
-
+		listView = (ListView) findViewById(R.id.cardListView);
 		listView.setOnItemClickListener(mMessageClickedHandler);
+		eventlistadapter = new EventListAdapter(getBaseContext(),
+				R.layout.activity_main_listrow, currentSimpleGeofences);
+		listView.setAdapter(eventlistadapter);
 		addGeofences();
 	}
 
