@@ -30,7 +30,6 @@ public final class GeofenceUtils {
 	public enum REQUEST_TYPE {
 		ADD, ADDONE, REMOVE
 	}
-
 	public static final int ADD_GEOFENCE_REQUEST = 10;
 	public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	public static final CharSequence GEOFENCE_ID_DELIMITER = ",";
@@ -224,5 +223,15 @@ public final class GeofenceUtils {
 		// TODO Debug String
 		Log.d("com.asdar.geofence", "Arr Size");
 		return arr.toArray(new String[0]);
+	}
+	public static ArrayList<SimpleGeofence> getSimpleGeofences(SharedPreferences mPrefs,Context c){
+		ArrayList<SimpleGeofence> currentSimpleGeofences = new ArrayList<SimpleGeofence>();
+		GeofenceStore geofencestorage = new GeofenceStore(c);
+		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
+				-1); i++) {
+			currentSimpleGeofences.add(geofencestorage.getGeofence(
+					i.toString(), c));
+		}
+		return currentSimpleGeofences;
 	}
 }
