@@ -31,7 +31,7 @@ public class GeofenceStore {
      * @param id The ID of a stored geofence
      * @return A geofence defined by its center and radius. See
      */
-    public SimpleGeofence getGeofence(String id, Context c) {
+    public SimpleGeofence getGeofence(int id, Context c) {
         /*
          * Get the latitude for the geofence identified by id, or
 		 * INVALID_FLOAT_VALUE if it doesn't exist
@@ -93,7 +93,7 @@ public class GeofenceStore {
      * @param geofence The SimpleGeofence containing the values you want to save in
      *                 SharedPreferences
      */
-    public void setGeofence(String id, SimpleGeofence geofence) {
+    public void setGeofence(int id, SimpleGeofence geofence) {
 		/*
 		 * Get a SharedPreferences editor instance. Among other things,
 		 * SharedPreferences ensures that updates are atomic and non-concurrent
@@ -121,7 +121,7 @@ public class GeofenceStore {
         editor.commit();
     }
 
-    public void clearGeofence(String id) {
+    public void clearGeofence(int id) {
 		/*
 		 * Remove a flattened geofence object from storage by removing all of
 		 * its keys
@@ -149,7 +149,7 @@ public class GeofenceStore {
      * @param fieldName The field represented by the key
      * @return The full key name of a value in SharedPreferences
      */
-    static String getGeofenceFieldKey(String id, String fieldName) {
+    static String getGeofenceFieldKey(int id, String fieldName) {
         return GeofenceUtils.KEY_PREFIX + "." + id + "." + fieldName;
     }
 

@@ -55,7 +55,7 @@ public class BrightnessAction extends Activity implements Action {
 	}
 
 	@Override
-	public void commit(Context context, String id) {
+	public void commit(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = mPrefs.edit();
@@ -114,7 +114,7 @@ public class BrightnessAction extends Activity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, String id)
+	public Action generateSavedState(Context context, int id)
 			 {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);

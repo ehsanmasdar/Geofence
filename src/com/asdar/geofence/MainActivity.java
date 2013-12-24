@@ -213,7 +213,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			mDrawerList.setItemChecked(i+2, true);
 			mDrawerLayout.closeDrawer(mDrawerList);
 			Integer a = i;
-			setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a.toString(), getApplicationContext()).getName());
+			setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a, getApplicationContext()).getName());
 
 		}
 	}
@@ -243,7 +243,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		simpleGeofenceNames.add("Map");
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
-			simpleGeofenceNames.add(ge.getGeofence(i.toString(),
+			simpleGeofenceNames.add(ge.getGeofence(i,
 					getApplicationContext()).getName());
 		}
 
@@ -409,7 +409,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i.toString(), getBaseContext()));
+					i, getBaseContext()));
 		}
 
 		startActivity(intent);

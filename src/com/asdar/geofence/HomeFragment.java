@@ -27,7 +27,7 @@ public class HomeFragment extends ListFragment {
 				-1); i++) {
 			
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i.toString(), getActivity().getApplicationContext()));
+					i, getActivity().getApplicationContext()));
 		}
 		 eventlistadapter = new EventListAdapter(getActivity().getBaseContext(),
 				R.layout.activity_main_listrow, currentSimpleGeofences);
@@ -51,7 +51,7 @@ public class HomeFragment extends ListFragment {
 			ArrayList<SimpleGeofence> localcurrentSimpleGeofences = new ArrayList<SimpleGeofence>();
 			for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 					-1); i++) {
-				localcurrentSimpleGeofences.add(ge.getGeofence(i.toString(),
+				localcurrentSimpleGeofences.add(ge.getGeofence(i,
 						getActivity().getApplicationContext()));
 			}
 

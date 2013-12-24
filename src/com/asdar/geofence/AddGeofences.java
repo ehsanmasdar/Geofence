@@ -218,14 +218,14 @@ public class AddGeofences extends Activity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Integer startidtemp = 0;
+			int startidtemp = 0;
 			Editor editor = mPrefs.edit();
 			try {
 				GeofenceStore geofencestorage = new GeofenceStore(
 						AddGeofences.this);
 				startidtemp = mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 						-1);
-				SimpleGeofence g = new SimpleGeofence(startidtemp.toString(),
+				SimpleGeofence g = new SimpleGeofence(startidtemp,
 						namedit.getText().toString(), buildAddress(s.get(0)
 								.getLatitude(), s.get(0).getLongitude()), s
 								.get(0).getLatitude(), s.get(0).getLongitude(),
@@ -233,9 +233,9 @@ public class AddGeofences extends Activity {
 						Geofence.NEVER_EXPIRE,
 						Geofence.GEOFENCE_TRANSITION_ENTER
 								| Geofence.GEOFENCE_TRANSITION_EXIT, 0, 0);
-				geofencestorage.setGeofence(startidtemp.toString(), g);
+				geofencestorage.setGeofence(startidtemp, g);
 				editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
-				GeofenceUtils.save(actionlist, editor, startidtemp.toString());
+				GeofenceUtils.save(actionlist, editor, startidtemp);
 				blah = g;
 
 			} catch (IOException e) {
@@ -243,9 +243,9 @@ public class AddGeofences extends Activity {
 			}
 
 			for (Action a : actionlist) {
-				a.commit(getApplicationContext(), startidtemp.toString());
+				a.commit(getApplicationContext(), startidtemp);
 			}
-			return startidtemp.toString();
+			return "";
 		}
 
 		@Override

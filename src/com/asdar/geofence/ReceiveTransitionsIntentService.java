@@ -45,41 +45,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
      *               addGeofences()
      */
     protected void onHandleIntent(Intent intent) {
-        // First check for errors
         Log.d("com.asdar.geofence", "Recieved Geofence Trigger");
         mPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
-       
-        if (LocationClient.hasError(intent)) {
-            // Get the error code with a static method
-            int errorCode = LocationClient.getErrorCode(intent);
-            // Log the error
-            Log.e("ReceiveTransitionsIntentService",
-                    "Location Services error: " + Integer.toString(errorCode));
-            /*
-             * You can also send the error code to an Activity or Fragment with
-			 * a broadcast Intent
-			 */
-            /*
-             * If there's no error, get the transition type and the IDs of the
-			 * geofence or geofences that triggered the transition
-			 */
-        } else {
             // Get the type of transition (entry or exit)
             int transitionType = LocationClient.getGeofenceTransition(intent);
             // Test that a valid transition was reported
             if ((transitionType == Geofence.GEOFENCE_TRANSITION_ENTER)
                     || (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) || (transitionType == Geofence.GEOFENCE_TRANSITION_DWELL)) {
-                List<Geofence> triggerList = LocationClient
-                        .getTriggeringGeofences(intent);
-                String[] triggerIds = new String[triggerList.size()];
-                for (int i = 0; i < triggerIds.length; i++) {
-                    // Store the Id of each geofence
-                    triggerIds[i] = triggerList.get(i).getRequestId();
-                }
+                int triggerID = intent.getIntExtra("id", 0);
                 String notificationbuilder = "";
-                for (int i = 0; i < triggerIds.length; i++) {
-                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerIds[i], mPrefs, getApplicationContext());
+                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerID, mPrefs, getApplicationContext());
 
                     for (Action a : locallist) {
                         notificationbuilder = (a.notificationText()) + ", ";
@@ -89,14 +65,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
                         }
                         a.execute(getApplicationContext());
                     }
-                }
+                
 
                 try {
                     if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER || transitionType == Geofence.GEOFENCE_TRANSITION_DWELL ) {
-                        sendNotification(triggerIds, notificationbuilder , false);
+                        sendNotification(triggerID, notificationbuilder , false);
                     }else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT)  {
                     	Log.d("com.asdar.geofence", "left geofence");
-                        sendNotification(triggerIds, notificationbuilder, true);
+                        sendNotification(triggerID, notificationbuilder, true);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -106,11 +82,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
                         "Geofence transition error: ");
             }
         }
-        // An invalid transition was reported
-
-    }
-
-
     private String getTransitionString(int transitionType) {
         switch (transitionType) {
 
@@ -126,7 +97,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void sendNotification(String[] triggerIds, String contentext, boolean exit) throws IOException {
+    private void sendNotification(int triggerID, String contentext, boolean exit) throws IOException {
         if (!exit) {
             // Create an explicit content Intent that starts the main Activity
             Intent notificationIntent = new Intent(getApplicationContext(),
@@ -154,7 +125,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
             // Set the notification contents
             builder.setSmallIcon(R.drawable./* TEMP */ic_launcher)
-                  .setContentTitle("At " + buildName(triggerIds[0]))
+                  .setContentTitle("At " + buildName(triggerID))
                     .setContentText(contentext)
                     .setContentIntent(notificationPendingIntent)
                     .setOngoing(true);
@@ -171,7 +142,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     }
 
-    public String buildName(String id) throws IOException {
+    public String buildName(int id) throws IOException {
             return mPrefs.getString(g.getGeofenceFieldKey(id, GeofenceUtils.KEY_NAME), GeofenceUtils.INVALID_STRING_VALUE);
 
     }

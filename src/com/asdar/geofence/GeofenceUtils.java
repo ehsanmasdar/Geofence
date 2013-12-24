@@ -81,7 +81,7 @@ public final class GeofenceUtils {
 	// TODO:Fix for devices below Honeycomb
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static void save(ArrayList<Action> actionlist, Editor e,
-			String geofenceid) {
+			int geofenceid) {
 		HashSet<String> list = new HashSet<String>();
 		for (Action a : actionlist) {
 			String str = a.toString();
@@ -97,7 +97,7 @@ public final class GeofenceUtils {
 
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static List<Action> generateActionArray(String id,
+	public static List<Action> generateActionArray(int id,
 			SharedPreferences mPrefs, Context c) {
 		ArrayList<Action> list = new ArrayList<Action>();
 
@@ -112,7 +112,7 @@ public final class GeofenceUtils {
 		return list;
 	}
 
-	public static Action queryString(String str, String id, Context context) {
+	public static Action queryString(String str, int id, Context context) {
 		try {
 			Action a = (Action) Class.forName(str).newInstance();
 			return a.generateSavedState(context, id);
@@ -230,8 +230,9 @@ public final class GeofenceUtils {
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i.toString(), c));
+					i, c));
 		}
 		return currentSimpleGeofences;
 	}
+	
 }
