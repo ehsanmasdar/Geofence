@@ -30,7 +30,6 @@ public class LocationService extends Service implements
 	SharedPreferences mPrefs;
 
 	public int onStartCommand(Intent intent, int flags, int startID) {
-		Log.d("com.asdar.geofence", "started location service");
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		makeForeground();
@@ -61,21 +60,23 @@ public class LocationService extends Service implements
 		builder.setContentIntent(localPendingIntent);
 		builder.setOnlyAlertOnce(true);
 		startForeground(100, builder.build());
-		Log.d("com.asdar.geofence", "foreground init");
-
 	}
 
 	public void makeUseOfLocation(Location loc) {
+		Log.d("com.asdar.Geofence", "Lat: " + loc.getLatitude() + " Long: "
+				+ loc.getLongitude());
 		ArrayList<SimpleGeofence> g = GeofenceUtils.getSimpleGeofences(mPrefs,
 				getBaseContext());
 		for (SimpleGeofence a : g) {
 			float radius = a.getRadius()/1000;
+			Log.d("com.asdar.geofence","Radius: " + radius + " Distance From Current: " + distance(loc.getLatitude(),loc.getLongitude(),a.getLatitude(),a.getLongitude()));
 			if (radius >= distance(loc.getLatitude(),loc.getLongitude(),a.getLatitude(),a.getLongitude())){
 				Intent intent = new Intent(this, ReceiveTransitionsIntentService.class);
+				intent.putExtra("id", a.getId());
+				intent.putExtra("transitionType", 1);
+				startService(intent);
 			}
 		}
-		Log.d("com.asdar.Geofence", "Lat: " + loc.getLatitude() + " Long: "
-				+ loc.getLongitude());
 	}
 
 	public IBinder onBind(Intent paramIntent) {

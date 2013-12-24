@@ -8,17 +8,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationClient;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ReceiveTransitionsIntentService extends IntentService {
@@ -45,11 +40,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
      *               addGeofences()
      */
     protected void onHandleIntent(Intent intent) {
-        Log.d("com.asdar.geofence", "Recieved Geofence Trigger");
         mPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
             // Get the type of transition (entry or exit)
-            int transitionType = LocationClient.getGeofenceTransition(intent);
+            int transitionType = intent.getIntExtra("transitionType", 1 );
             // Test that a valid transition was reported
             if ((transitionType == Geofence.GEOFENCE_TRANSITION_ENTER)
                     || (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) || (transitionType == Geofence.GEOFENCE_TRANSITION_DWELL)) {

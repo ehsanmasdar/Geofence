@@ -102,7 +102,6 @@ public final class GeofenceUtils {
 		ArrayList<Action> list = new ArrayList<Action>();
 
 		// TODO Debug string
-		Log.d("com.asdar.geofence", "id= " + id);
 		Set<String> local = mPrefs.getStringSet(
 				GeofenceStore.getGeofenceFieldKey(id, KEY_ACTIONLIST), null);
 		for (String str : local) {
@@ -220,8 +219,6 @@ public final class GeofenceUtils {
 				}
 			}
 		}
-		// TODO Debug String
-		Log.d("com.asdar.geofence", "Arr Size");
 		return arr.toArray(new String[0]);
 	}
 	public static ArrayList<SimpleGeofence> getSimpleGeofences(SharedPreferences mPrefs,Context c){

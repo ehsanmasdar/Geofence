@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				-1); i++) {
 			currentGeofences.add(currentSimpleGeofences.get(i).toGeofence());
 		}
-		addGeofences();
+		//addGeofences();
 		CharSequence text = "startid"
 				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
 		int duration = Toast.LENGTH_SHORT;
