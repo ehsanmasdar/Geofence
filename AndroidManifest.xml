@@ -90,14 +90,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <receiver android:name="LocationBroadcast" >
+            <intent-filter>
+                	<action android:name="com.asdar.geofence.locationstart" >
+                </action>
+            </intent-filter>
+        </receiver>
         <service
-            android:name="com.dropbox.sync.android.DbxSyncService"
+            android:name="com.asdar.geofence.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:label="Dropbox Sync" />
+            android:label="LocationService" />
         <meta-data android:name="com.google.android.gms.version"
            android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

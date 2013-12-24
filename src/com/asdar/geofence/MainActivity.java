@@ -82,7 +82,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView mDrawerList;
 	private static final String SHARED_PREFERENCES = "SharedPreferences";
 	private ArrayList<SimpleGeofence> currentSimpleGeofences;
-	private LocationRequest mLocationRequest;
 	private ArrayList<SimpleGeofence> locallist;
 	private int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private boolean homeFragment;
@@ -96,8 +95,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}
 		mPrefs = getBaseContext().getSharedPreferences(SHARED_PREFERENCES,
 				Context.MODE_PRIVATE);
-		mLocationRequest = new LocationRequest().setPriority(
-				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(30000);
+		Intent intent = new Intent();
+		intent.setAction("com.asdar.geofence.locationstart");
+		sendBroadcast(intent);
 		mInProgress = false;
 		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
 			int startidtemp = 0;
@@ -265,6 +265,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onConnected(Bundle dataBundle) {
 		// TODO debug string
+		Log.d("com.asdar.geofence", "connected to location service (mainactivity)");
 		switch (mRequestType) {
 		case ADD:
 			// Get the PendingIntent for the request
@@ -278,7 +279,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			break;
 		}
 		currentloc = mLocationClient.getLastLocation();
-		mLocationClient.requestLocationUpdates(mLocationRequest, this);
 	}
 
 	// Implementation of OnConnectionFailedListener.onConnectionFailed
@@ -371,7 +371,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// Start a request to add geofences
 		mRequestType = GeofenceUtils.REQUEST_TYPE.ADD;
 		// TODO: debug string
-		Log.d("com.asdar.geofence", "started add geofence");
 
 		/*
 		 * Test for Google Play services after setting the request type. If
@@ -446,39 +445,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}
 
 	public void onLocationChanged(Location location) {
-		currentloc = location;
-		// TODO debug string
-		Log.d("com.asdar.geofence", "Lat" + location.getLatitude() + "Long"
-				+ location.getLongitude());
-		lowerLeftLongitude = location.getLongitude();
-		lowerLeftLatitude = location.getLatitude();
-		upperRightLongitude = location.getLongitude();
-		upperRightLatitude = location.getLatitude();
-
-		if (upperRightLongitude + .5 > 180) {
-			upperRightLongitude = 180;
-		} else {
-			upperRightLongitude += .5;
-		}
-
-		if (lowerLeftLongitude - .5 < -180) {
-			lowerLeftLongitude = -180;
-		} else {
-			lowerLeftLongitude -= .5;
-		}
-
-		if (lowerLeftLatitude - .5 < -90) {
-			lowerLeftLatitude = -90;
-		} else {
-			lowerLeftLatitude -= .5;
-		}
-
-		if (upperRightLatitude + .5 > 90) {
-			upperRightLatitude = 90;
-		} else {
-			upperRightLatitude += .5;
-		}
-
+		
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
