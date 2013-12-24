@@ -2,6 +2,8 @@ package com.asdar.geofence;
 
 import java.util.ArrayList;
 
+import org.holoeverywhere.app.Activity;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -54,8 +56,17 @@ public class MapFragment extends Fragment {
 				
 			}
 			 map.setMyLocationEnabled(true);
-			 LatLng centeronfirst = new LatLng(local.get(0).getLatitude(), local.get(0).getLongitude());
-		     map.moveCamera(CameraUpdateFactory.newLatLngZoom(centeronfirst, 11));
+			 Activity a = (Activity) getActivity();
+			 if (a instanceof MainActivity){
+				 if(((MainActivity) this.getActivity()).getCurrentloc() != null){
+					 double lat = ((MainActivity) this.getActivity()).getCurrentloc().getLatitude();
+					 double lon = ((MainActivity) this.getActivity()).getCurrentloc().getLongitude();
+					 LatLng centeroncurrent = new LatLng(lat,lon);
+				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(centeroncurrent, 13));
+				 }
+				 
+			 }
+			 
 		}
 	}
 	@Override

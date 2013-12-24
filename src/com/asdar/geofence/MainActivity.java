@@ -74,7 +74,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private boolean mInProgress;
 	private REQUEST_TYPE mRequestType;
 	private double upperRightLongitude;
-	private Location currentloc;
+	public  Location currentloc;
 	private GeofenceStore geofencestorage;
 	private List<Geofence> currentGeofences;
 	private SharedPreferences mPrefs;
@@ -277,6 +277,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			}
 			break;
 		}
+		currentloc = mLocationClient.getLastLocation();
 		mLocationClient.requestLocationUpdates(mLocationRequest, this);
 	}
 
@@ -525,4 +526,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		return true;
 	}
+	public Location getCurrentloc() {
+		return currentloc;
+	}
+
+	public  void setCurrentloc(Location currentloc) {
+		this.currentloc = currentloc;
+	}
+
 }
