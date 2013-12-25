@@ -28,12 +28,14 @@ public class LocationService extends Service implements
 	LocationClient mLocationClient;
 	LocationRequest mLocationRequest;
 	SharedPreferences mPrefs;
-
+	ArrayList<Integer> entered;
 	public int onStartCommand(Intent intent, int flags, int startID) {
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		makeForeground();
 		startLocationListening(10000);
+		entered = new ArrayList<Integer>();
+
 		return 1;
 	}
 
@@ -55,7 +57,7 @@ public class LocationService extends Service implements
 				this);
 		builder.setContentTitle("Geofence");
 		builder.setSmallIcon(R.drawable.ic_launcher);
-		builder.setContentText("Geofence is recieveing location");
+		builder.setContentText("Geofence is waiting for you to reach a specified location");
 		builder.setPriority(-2);
 		builder.setContentIntent(localPendingIntent);
 		builder.setOnlyAlertOnce(true);
@@ -68,12 +70,31 @@ public class LocationService extends Service implements
 		ArrayList<SimpleGeofence> g = GeofenceUtils.getSimpleGeofences(mPrefs,
 				getBaseContext());
 		for (SimpleGeofence a : g) {
-			float radius = a.getRadius()/1000;
-			Log.d("com.asdar.geofence","Radius: " + radius + " Distance From Current: " + distance(loc.getLatitude(),loc.getLongitude(),a.getLatitude(),a.getLongitude()));
-			if (radius >= distance(loc.getLatitude(),loc.getLongitude(),a.getLatitude(),a.getLongitude())){
-				Intent intent = new Intent(this, ReceiveTransitionsIntentService.class);
+			float radius = a.getRadius() / 1000;
+			Log.d("com.asdar.geofence",
+					"Radius: "
+							+ radius
+							+ " Distance From Current: "
+							+ distance(loc.getLatitude(), loc.getLongitude(),
+									a.getLatitude(), a.getLongitude()));
+			if (radius >= distance(loc.getLatitude(), loc.getLongitude(),
+					a.getLatitude(), a.getLongitude())) {
+				Intent intent = new Intent(this,
+						ReceiveTransitionsIntentService.class);
 				intent.putExtra("id", a.getId());
 				intent.putExtra("transitionType", 1);
+				if (!entered.contains(a.getId())){
+					entered.add(a.getId());
+				}
+				startService(intent);
+			}
+			if (entered.contains(a.getId()) && radius <= distance(loc.getLatitude(), loc.getLongitude(),
+					a.getLatitude(), a.getLongitude())){
+				Intent intent = new Intent(this,
+						ReceiveTransitionsIntentService.class);
+				intent.putExtra("id", a.getId());
+				intent.putExtra("transitionType", 2);
+				entered.remove(a.getId());
 				startService(intent);
 			}
 		}
@@ -130,7 +151,6 @@ public class LocationService extends Service implements
 		Double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2)
 				* Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
 		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		//
 		Double distance = R * c;
 		return distance;
 

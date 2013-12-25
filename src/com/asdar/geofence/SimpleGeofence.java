@@ -1,7 +1,5 @@
 package com.asdar.geofence;
 
-import android.content.Context;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -113,30 +111,6 @@ public class SimpleGeofence /*implements Parcelable */ {
     public void setName(String mName) {
         this.mName = mName;
     }
-
-    /*	@Override
-        public int describeContents() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-
-            out.writeString(mId);
-            out.writeDouble(mLatitude);
-            out.writeDouble(mLongitude);
-            out.writeFloat(mRadius);
-            out.writeLong(mExpirationDuration);
-            out.writeInt(mTransitionType);
-            if(mAudioMute){
-                out.writeInt (1);
-            }
-            else {
-                out.writeInt(0);
-            }
-        }
-        */
     public static final Parcelable.Creator<SimpleGeofence> CREATOR = new Parcelable.Creator<SimpleGeofence>() {
         public SimpleGeofence createFromParcel(Parcel in) {
             return new SimpleGeofence(in);

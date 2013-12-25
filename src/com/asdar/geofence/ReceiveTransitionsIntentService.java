@@ -93,6 +93,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void sendNotification(int triggerID, String contentext, boolean exit) throws IOException {
         if (!exit) {
+        	Log.d("com.asdar.geofence", "adding notification");
             // Create an explicit content Intent that starts the main Activity
             Intent notificationIntent = new Intent(getApplicationContext(),
                     MainActivity.class);

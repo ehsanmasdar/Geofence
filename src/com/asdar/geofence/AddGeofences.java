@@ -162,7 +162,6 @@ public class AddGeofences extends Activity {
 			alert.show(getSupportFragmentManager(), "adderror");
 		} else {
 			new CommitTask().execute();
-			new RegisterTask().execute();
 		}
 	}
 
@@ -225,10 +224,10 @@ public class AddGeofences extends Activity {
 						AddGeofences.this);
 				startidtemp = mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 						-1);
-				SimpleGeofence g = new SimpleGeofence(startidtemp,
-						namedit.getText().toString(), buildAddress(s.get(0)
-								.getLatitude(), s.get(0).getLongitude()), s
-								.get(0).getLatitude(), s.get(0).getLongitude(),
+				SimpleGeofence g = new SimpleGeofence(startidtemp, namedit
+						.getText().toString(), buildAddress(s.get(0)
+						.getLatitude(), s.get(0).getLongitude()), s.get(0)
+						.getLatitude(), s.get(0).getLongitude(),
 						Long.parseLong(radiusedit.getText().toString()),
 						Geofence.NEVER_EXPIRE,
 						Geofence.GEOFENCE_TRANSITION_ENTER
@@ -263,104 +262,4 @@ public class AddGeofences extends Activity {
 
 		}
 	}
-
-	public class RegisterTask extends AsyncTask<String, String, String>
-			implements ConnectionCallbacks, OnConnectionFailedListener,
-			OnAddGeofencesResultListener, LocationListener {
-		ProgressDialog dialog;
-		boolean done;
-		private LocationClient mLocationClient;
-
-		public RegisterTask() {
-
-		}
-
-		@Override
-		protected String doInBackground(String[] paramArrayOfString) {
-			/*
-			 * Test for Google Play services after setting the request type. If
-			 * Google Play services isn't present, the proper request can be
-			 * restarted.
-			 */
-			/*
-			 * Create a new location client object. Since the current activity
-			 * class implements ConnectionCallbacks and
-			 * OnConnectionFailedListener, pass the current activity object as
-			 * the listener for both parameters
-			 */
-			mLocationClient = new LocationClient(AddGeofences.this, this, this);
-
-			LocationRequest mLocationRequest = new LocationRequest()
-					.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-					.setInterval(30000);
-			mLocationClient.connect();
-			while (true) {
-				if (done = true) {
-					break;
-				}
-
-			}
-			return "";
-		}
-
-		@Override
-		protected void onPostExecute(String str) {
-			this.dialog.dismiss();
-			finish();
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			this.dialog = new ProgressDialog(AddGeofences.this);
-			this.dialog.setMessage("Registering...");
-			this.dialog.show();
-
-		}
-
-		@Override
-		public void onLocationChanged(Location arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onAddGeofencesResult(int statusCode, String[] arg1) {
-			if (LocationStatusCodes.SUCCESS == statusCode) {
-				done = true;
-			}
-		}
-
-		@Override
-		public void onConnectionFailed(ConnectionResult arg0) {
-			// TODO Auto-generated method stub
-
-		}
-		@Override
-		public void onDisconnected() {
-			// TODO Auto-generated method stub
-			
-		}
-		@Override
-		public void onConnected(Bundle arg0) {
-			// Get the PendingIntent for the request
-			PendingIntent mGeofencePendingIntent = getTransitionPendingIntent();
-			// Send a request to add the current geofences
-			// TODO debug string
-			ArrayList<Geofence> list = new ArrayList<Geofence>();
-			list.add(blah.toGeofence());
-			mLocationClient.addGeofences(list, mGeofencePendingIntent, this);
-		}
-		private PendingIntent getTransitionPendingIntent() {
-			// Create an explicit Intent
-			Intent intent = new Intent(AddGeofences.this, ReceiveTransitionsIntentService.class);
-			/*
-			 * Return the PendingIntent
-			 */
-			return PendingIntent.getService(AddGeofences.this, 0, intent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-		}
-	
-	}
-
 }

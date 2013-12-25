@@ -4,15 +4,11 @@ import java.io.IOException;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.holoeverywhere.app.Activity;
-import org.holoeverywhere.app.AlertDialog;
 import org.holoeverywhere.app.DialogFragment;
-import org.holoeverywhere.widget.AdapterView;
 import org.holoeverywhere.widget.ArrayAdapter;
-import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.Toast;
 
@@ -21,59 +17,27 @@ import android.view.Menu;
 import android.widget.AdapterView.OnItemClickListener;
 
 import android.annotation.TargetApi;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-
-import com.google.android.gms.location.LocationListener;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.asdar.geofence.GeofenceUtils.REQUEST_TYPE;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationClient.OnAddGeofencesResultListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationStatusCodes;
-import com.asdar.geofence.AudioMuteAction;
 
-public class MainActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener, OnAddGeofencesResultListener,
-		LocationListener {
+public class MainActivity extends Activity{
 
 	public final static String LOC = "com.asdar.geofence.LOC";
 	public final static String Feature = "com.asdar.geofence.Feature";
-	private DialogFragment d;
-	private List<Address> results;
-	private List<GeofenceAddress> georesults;
-	private double lowerLeftLatitude;
-	private double lowerLeftLongitude;
-	private double upperRightLatitude;
-	private LocationClient mLocationClient;
-	private PendingIntent mGeofencePendingIntent;
-	private ListView listView;
-	private boolean mInProgress;
-	private REQUEST_TYPE mRequestType;
-	private double upperRightLongitude;
 	public  Location currentloc;
 	private GeofenceStore geofencestorage;
 	private List<Geofence> currentGeofences;
@@ -82,9 +46,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView mDrawerList;
 	private static final String SHARED_PREFERENCES = "SharedPreferences";
 	private ArrayList<SimpleGeofence> currentSimpleGeofences;
-	private ArrayList<SimpleGeofence> locallist;
-	private int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-	private boolean homeFragment;
 	private ArrayAdapter<String> draweradapter;
 	private ArrayList<String> draweritems;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -98,7 +59,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		Intent intent = new Intent();
 		intent.setAction("com.asdar.geofence.locationstart");
 		sendBroadcast(intent);
-		mInProgress = false;
 		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
 			int startidtemp = 0;
 			Editor editor = mPrefs.edit();
@@ -112,12 +72,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				-1); i++) {
 			currentGeofences.add(currentSimpleGeofences.get(i).toGeofence());
 		}
-		//addGeofences();
-		CharSequence text = "startid"
-				+ mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1);
-		int duration = Toast.LENGTH_SHORT;
-		Toast toast = Toast.makeText(getBaseContext(), text, duration);
-		// toast.show();
 		// show layout
 		setContentView(R.layout.activity_main);
 		// Initialize drawer
@@ -180,7 +134,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			// drawer
 			mDrawerList.setItemChecked(0, true);
 			mDrawerLayout.closeDrawer(mDrawerList);
-			homeFragment = true;
 			setTitle("Geofence");
 		}
 		else if (i == -1){
@@ -194,7 +147,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			// drawer
 			mDrawerList.setItemChecked(1, true);
 			mDrawerLayout.closeDrawer(mDrawerList);
-			homeFragment = true;
 			setTitle("Geofence");
 		}
 
@@ -261,146 +213,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			alert.show(getSupportFragmentManager(), "addresses");
 		}
 	}
-
-	@Override
-	public void onConnected(Bundle dataBundle) {
-		// TODO debug string
-		Log.d("com.asdar.geofence", "connected to location service (mainactivity)");
-		switch (mRequestType) {
-		case ADD:
-			// Get the PendingIntent for the request
-			mGeofencePendingIntent = getTransitionPendingIntent();
-			// Send a request to add the current geofences
-			if (currentGeofences.size() > 0) {
-				// TODO debug string
-				mLocationClient.addGeofences(currentGeofences,
-						mGeofencePendingIntent, this);
-			}
-			break;
-		}
-		currentloc = mLocationClient.getLastLocation();
-	}
-
-	// Implementation of OnConnectionFailedListener.onConnectionFailed
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-		// Turn off the request flag
-		mInProgress = false;
-		/*
-		 * If the error has a resolution, start a Google Play services activity
-		 * to resolve it.
-		 */
-		if (connectionResult.hasResolution()) {
-			try {
-				connectionResult.startResolutionForResult(this,
-						GeofenceUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-			} catch (SendIntentException e) {
-				// Log the error
-				e.printStackTrace();
-			}
-			// If no resolution is available, display an error dialog
-		} else {
-			// Get the error code
-			int errorCode = connectionResult.getErrorCode();
-			// Get the error dialog from Google Play services
-			android.app.Dialog errorDialog = GooglePlayServicesUtil
-					.getErrorDialog(errorCode, this,
-							CONNECTION_FAILURE_RESOLUTION_REQUEST);
-			errorDialog.show();
-
-			/*
-			 * // If Google Play services can provide an error dialog if
-			 * (errorDialog != null) { // Create a new DialogFragment for the
-			 * error dialog DialogFragment errorFragment = new DialogFragment();
-			 * // Set the dialog in the DialogFragment
-			 * errorFragment.setDialog(errorDialog); // Show the error dialog in
-			 * the DialogFragment errorFragment.show(
-			 * getSupportFragmentManager()); }
-			 */
-
-		}
-	}
-
-	public void onAddGeofencesResult(int statusCode, String[] geofenceRequestIds) {
-		// If adding the geofences was successful
-		if (LocationStatusCodes.SUCCESS == statusCode) {
-			// TODO debug string
-		} else {
-			Log.e("com.asdar.geofence", "statuscode" + " " + statusCode);
-			switch (statusCode) {
-			case 1000:
-				ErrorThrower
-						.newInstance(
-								"This app requires Location Services to be enabled. \n The app will now exit.",
-								true).show(getSupportFragmentManager(),
-								"Error 1000");
-				break;
-			case 1001:
-				ErrorThrower
-						.newInstance(
-								"You have over 100 Geofences.\n The app wil cease to function till you have less than 100.",
-								false).show(getSupportFragmentManager(),
-								"Error 1001");
-
-			}
-		}
-		// Turn off the in progress flag and disconnect the client
-		mInProgress = false;
-		mLocationClient.disconnect();
-	}
-
-	@Override
-	public void onDisconnected() {
-		// Turn off the request flag
-		mInProgress = false;
-		// Destroy the current location client
-		mLocationClient = null;
-	}
-
-	private PendingIntent getTransitionPendingIntent() {
-		// Create an explicit Intent
-		Intent intent = new Intent(this, ReceiveTransitionsIntentService.class);
-		/*
-		 * Return the PendingIntent
-		 */
-		return PendingIntent.getService(this, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-	}
-
-	public void addGeofences() {
-		// Start a request to add geofences
-		mRequestType = GeofenceUtils.REQUEST_TYPE.ADD;
-		// TODO: debug string
-
-		/*
-		 * Test for Google Play services after setting the request type. If
-		 * Google Play services isn't present, the proper request can be
-		 * restarted.
-		 */
-		/*
-		 * Create a new location client object. Since the current activity class
-		 * implements ConnectionCallbacks and OnConnectionFailedListener, pass
-		 * the current activity object as the listener for both parameters
-		 */
-		mLocationClient = new LocationClient(this, this, this);
-		// If a request is not already underway
-		if (!mInProgress) {
-			// Indicate that a request is underway
-			mInProgress = true;
-			// Request a connection from the client to Location Services
-			// TODO debug string
-			Log.d("com.asdar.geofence", "started connection");
-			mLocationClient.connect();
-		} else {
-			/*
-			 * A request is already underway. You can handle this situation by
-			 * disconnecting the client, re-setting the flag, and then re-trying
-			 * the request.
-			 */
-		}
-	}
-
-
 	public void editopen(View view) throws IOException {
 
 		Intent intent = new Intent(getBaseContext(), EditGeofences.class);
@@ -420,50 +232,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		Intent intent = new Intent(getBaseContext(), AddGeofences.class);
 		startActivity(intent);
 	}
-
 	
-
-	public static double distance(double lat1, double lon1, double lat2,
-			double lon2) {
-
-		final int R = 6371; // Radius of the earth
-		Double dLat = toRad(lat2 - lat1);
-		Double dLon = toRad(lon2 - lon1);
-		lat1 = toRad(lat1);
-		lat2 = toRad(lat2);
-		Double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2)
-				* Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		//
-		Double distance = R * c;
-		return distance;
-
-	}
-
-	private static Double toRad(Double value) {
-		return value * Math.PI / 180;
-	}
-
-	public void onLocationChanged(Location location) {
-		
-	}
-
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
-
-	public void onProviderEnabled(String provider) {
-	}
-
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public String toString() {
-		return "MainActivity [lowerLeftLatitude=" + lowerLeftLatitude
-				+ ", lowerLeftLongitude=" + lowerLeftLongitude
-				+ ", upperRightLatitude=" + upperRightLatitude
-				+ ", upperRightLongitude=" + upperRightLongitude + "]";
-	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -495,10 +264,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}
 	public Location getCurrentloc() {
 		return currentloc;
-	}
-
-	public  void setCurrentloc(Location currentloc) {
-		this.currentloc = currentloc;
 	}
 
 }

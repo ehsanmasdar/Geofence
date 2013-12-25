@@ -100,8 +100,6 @@ public final class GeofenceUtils {
 	public static List<Action> generateActionArray(int id,
 			SharedPreferences mPrefs, Context c) {
 		ArrayList<Action> list = new ArrayList<Action>();
-
-		// TODO Debug string
 		Set<String> local = mPrefs.getStringSet(
 				GeofenceStore.getGeofenceFieldKey(id, KEY_ACTIONLIST), null);
 		for (String str : local) {
@@ -116,13 +114,10 @@ public final class GeofenceUtils {
 			Action a = (Action) Class.forName(str).newInstance();
 			return a.generateSavedState(context, id);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -201,8 +196,6 @@ public final class GeofenceUtils {
 		Iterator i = set.iterator();
 		while (i.hasNext()) {
 			Class<?> c = (Class<?>) i.next();
-			// TODO Debug String
-			Log.d("com.asdar.geofence", "Class" + c.getName());
 			if (c.getName().toLowerCase().contains("action")
 					&& !c.getName().toLowerCase()
 							.equals("com.asdar.geofence.action")
