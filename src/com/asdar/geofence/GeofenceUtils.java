@@ -1,7 +1,5 @@
 package com.asdar.geofence;
 
-import android.annotation.SuppressLint;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
@@ -19,9 +17,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class GeofenceUtils {
 	private static ArrayAdapter arrayAdapter;

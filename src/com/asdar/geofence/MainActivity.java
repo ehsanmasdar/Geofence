@@ -3,6 +3,7 @@ package com.asdar.geofence;
 import java.io.IOException;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.holoeverywhere.widget.ArrayAdapter;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.Toast;
 
+import android.util.Log;
 import android.view.Menu;
 
 import android.widget.AdapterView.OnItemClickListener;
@@ -52,13 +54,10 @@ public class MainActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (android.os.Build.VERSION.SDK_INT >= 9) {
-			// checkGeocoder();
+			 checkGeocoder();
 		}
 		mPrefs = getBaseContext().getSharedPreferences(SHARED_PREFERENCES,
 				Context.MODE_PRIVATE);
-		Intent intent = new Intent();
-		intent.setAction("com.asdar.geofence.locationstart");
-		sendBroadcast(intent);
 		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
 			int startidtemp = 0;
 			Editor editor = mPrefs.edit();
@@ -66,11 +65,18 @@ public class MainActivity extends Activity{
 			editor.commit();
 		}
 		geofencestorage = new GeofenceStore(this);
-		currentGeofences = new ArrayList<Geofence>();
 		currentSimpleGeofences = GeofenceUtils.getSimpleGeofences(mPrefs, getApplicationContext());
-		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
-				-1); i++) {
-			currentGeofences.add(currentSimpleGeofences.get(i).toGeofence());
+		
+		if (currentSimpleGeofences.size() > 0){
+			Intent stop = new Intent();
+			stop.setAction("com.asdar.geofence.locationstop");
+			sendBroadcast(stop);
+			Intent start = new Intent();
+			start.setAction("com.asdar.geofence.locationstart");
+			sendBroadcast(start);
+		}
+		else{
+			Log.d("com.asdar.geofence","service instance already exists.");
 		}
 		// show layout
 		setContentView(R.layout.activity_main);
@@ -177,14 +183,21 @@ public class MainActivity extends Activity{
     }
 	@Override
 	protected void onPause() {
-		super.onPause();
-
+		super.onPause();	
 	}
-
 	@Override
 	protected void onResume() {
 		super.onResume();
 		regenerateList();
+	}
+	@Override
+	protected void onStart(){
+		super.onStart();
+		
+	}
+	@Override
+	protected void onRestart(){
+		super.onRestart();
 	}
 	public void regenerateList() {
 		SharedPreferences mPrefs = (SharedPreferences) getApplicationContext().getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,

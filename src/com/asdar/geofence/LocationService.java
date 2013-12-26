@@ -2,11 +2,14 @@ package com.asdar.geofence;
 
 import java.util.ArrayList;
 
+
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
@@ -32,6 +35,9 @@ public class LocationService extends Service implements
 	public int onStartCommand(Intent intent, int flags, int startID) {
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+		Editor e = mPrefs.edit();
+		e.putInt("com.asdar.geofence.SERVICESTARTID", startID);
+		e.commit();
 		makeForeground();
 		startLocationListening(10000);
 		entered = new ArrayList<Integer>();
@@ -40,6 +46,8 @@ public class LocationService extends Service implements
 	}
 
 	public void startLocationListening(int interval) {
+		Log.d("com.asdar.geofence",
+				"");
 		mLocationRequest = new LocationRequest().setPriority(
 				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(interval);
 		mLocationClient = new LocationClient(this, this, this);
@@ -105,8 +113,7 @@ public class LocationService extends Service implements
 	}
 
 	public void onConnected(Bundle paramBundle) {
-		Log.d("com.asdar.geofence",
-				"location sercvice connected to location client");
+	
 		mLocationClient.requestLocationUpdates(mLocationRequest, this);
 	}
 
@@ -114,7 +121,9 @@ public class LocationService extends Service implements
 	}
 
 	public void onDestroy() {
+		Log.d("com.asdar.geofence", "service destroyed");
 		if (mLocationClient != null) {
+			mLocationClient.removeLocationUpdates(this);
 			mLocationClient.disconnect();
 		}
 	}
@@ -125,10 +134,6 @@ public class LocationService extends Service implements
 
 	public void onLocationChanged(Location loc) {
 		makeUseOfLocation(loc);
-	}
-
-	public void sendNotification() {
-
 	}
 
 	public class LocationBinder extends Binder {

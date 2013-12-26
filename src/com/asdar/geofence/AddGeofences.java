@@ -45,7 +45,6 @@ public class AddGeofences extends Activity {
 	private ListView addListView;
 	private ArrayList<Action> actionlist;
 	private AlertDialog mActionSelectionDialog;
-	private boolean mActionChosen;
 	private SimpleGeofence blah;
 
 	public SimpleGeofence getGeofence() {
@@ -57,9 +56,7 @@ public class AddGeofences extends Activity {
 		super.onCreate(savedInstanceState);
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		String APP_KEY = "a6kopt2el9go62x";
-		String APP_SECRET = "r5nhykcj43f0rbj";
-
+		
 		setContentView(R.layout.activity_add);
 		actionlist = new ArrayList<Action>();
 		addadapter = new ActionAdapter(getBaseContext(),

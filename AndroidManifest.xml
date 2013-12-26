@@ -96,6 +96,12 @@
                 </action>
             </intent-filter>
         </receiver>
+        <receiver android:name="LocationBroadcastStop" >
+            <intent-filter>
+                	<action android:name="com.asdar.geofence.locationstop" >
+                </action>
+            </intent-filter>
+        </receiver>
         <service
             android:name="com.asdar.geofence.LocationService"
             android:enabled="true"

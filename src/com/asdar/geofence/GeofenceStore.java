@@ -36,7 +36,6 @@ public class GeofenceStore {
          * Get the latitude for the geofence identified by id, or
 		 * INVALID_FLOAT_VALUE if it doesn't exist
 		 */
-        boolean mAudioMute = mPrefs.getBoolean(getGeofenceFieldKey(id, GeofenceUtils.KEY_AUDIO_MUTE), GeofenceUtils.INVALID_BOOLEAN_VALUE);
         double lat = mPrefs.getFloat(getGeofenceFieldKey(id, GeofenceUtils.KEY_LATITUDE),
                 GeofenceUtils.INVALID_FLOAT_VALUE);
         /*
