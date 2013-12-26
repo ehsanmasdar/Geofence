@@ -45,11 +45,6 @@ public class BrightnessAction extends Activity implements Action {
 
 	@Override
 	public void execute(Context context) {
-		/*
-		WindowManager.LayoutParams lp = getWindow().getAttributes();
-		lp.screenBrightness = brightness;
-		getWindow().setAttributes(lp);
-		*/
         System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS_MODE, System.SCREEN_BRIGHTNESS_MODE_MANUAL);
 		System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
 	}

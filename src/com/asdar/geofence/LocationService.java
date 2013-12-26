@@ -2,12 +2,12 @@ package com.asdar.geofence;
 
 import java.util.ArrayList;
 
-
-
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -32,6 +33,17 @@ public class LocationService extends Service implements
 	LocationRequest mLocationRequest;
 	SharedPreferences mPrefs;
 	ArrayList<Integer> entered;
+	private int currentLocationUpdateRequest;
+	private final BroadcastReceiver receiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int action = intent.getIntExtra("activity", 0);
+			Log.d("com.asdar.geofence", "got action: " + action);
+			changeLocationUpdate(action);
+		}
+
+	};
+
 	public int onStartCommand(Intent intent, int flags, int startID) {
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -41,17 +53,50 @@ public class LocationService extends Service implements
 		makeForeground();
 		startLocationListening(10000);
 		entered = new ArrayList<Integer>();
-
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.asdar.geofence.ActivityRecieved");
+		registerReceiver(receiver, filter);
 		return 1;
 	}
 
 	public void startLocationListening(int interval) {
-		Log.d("com.asdar.geofence",
-				"");
+		Log.d("com.asdar.geofence", "");
+		currentLocationUpdateRequest = interval;
 		mLocationRequest = new LocationRequest().setPriority(
 				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(interval);
 		mLocationClient = new LocationClient(this, this, this);
 		mLocationClient.connect();
+	}
+
+	public void changeLocationUpdate(int action) {
+		int changedinterval = computeInterval(action);
+		if (changedinterval != currentLocationUpdateRequest
+				&& mLocationClient != null) {
+			mLocationClient.removeLocationUpdates(this);
+			if(changedinterval != -1){
+				LocationRequest localrequest = new LocationRequest().setPriority(
+						LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(
+						changedinterval);
+				mLocationClient.requestLocationUpdates(localrequest, this);
+
+			}
+				currentLocationUpdateRequest = changedinterval;
+		}
+	}
+
+	private int computeInterval(int action) {
+		switch(action){
+			case DetectedActivity.IN_VEHICLE:
+				return 10000;
+			case DetectedActivity.ON_BICYCLE:
+				return 20000;
+			case DetectedActivity.STILL:
+				return -1;
+			case DetectedActivity.UNKNOWN:
+				return 60000;
+		
+		}
+		return 0;
 	}
 
 	public void makeForeground() {
@@ -91,18 +136,14 @@ public class LocationService extends Service implements
 						ReceiveTransitionsIntentService.class);
 				intent.putExtra("id", a.getId());
 				intent.putExtra("transitionType", 1);
-				if (!entered.contains(a.getId())){
-					entered.add(a.getId());
-				}
 				startService(intent);
 			}
-			if (entered.contains(a.getId()) && radius <= distance(loc.getLatitude(), loc.getLongitude(),
-					a.getLatitude(), a.getLongitude())){
+			if (radius <= distance(loc.getLatitude(), loc.getLongitude(),
+					a.getLatitude(), a.getLongitude())) {
 				Intent intent = new Intent(this,
 						ReceiveTransitionsIntentService.class);
 				intent.putExtra("id", a.getId());
 				intent.putExtra("transitionType", 2);
-				entered.remove(a.getId());
 				startService(intent);
 			}
 		}
@@ -113,7 +154,7 @@ public class LocationService extends Service implements
 	}
 
 	public void onConnected(Bundle paramBundle) {
-	
+
 		mLocationClient.requestLocationUpdates(mLocationRequest, this);
 	}
 
@@ -126,6 +167,7 @@ public class LocationService extends Service implements
 			mLocationClient.removeLocationUpdates(this);
 			mLocationClient.disconnect();
 		}
+		unregisterReceiver(receiver);
 	}
 
 	public void onDisconnected() {

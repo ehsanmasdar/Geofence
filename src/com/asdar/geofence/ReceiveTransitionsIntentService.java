@@ -120,7 +120,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
             // Set the notification contents
             builder.setSmallIcon(R.drawable./* TEMP */ic_launcher)
-                  .setContentTitle("At " + buildName(triggerID))
+                  .setContentTitle("Entered " + buildName(triggerID))
                     .setContentText(contentext)
                     .setContentIntent(notificationPendingIntent)
                     .setOngoing(true);
@@ -129,10 +129,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             // Issue the notification
-            mNotificationManager.notify(102232, builder.build());
+            mNotificationManager.notify(102232+triggerID, builder.build());
         } else {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.cancel(102232);
+            mNotificationManager.cancel(102232+triggerID);
         }
 
     }

@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.widget.AdapterView.OnItemClickListener;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -34,9 +35,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.Geofence;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener{
 
 	public final static String LOC = "com.asdar.geofence.LOC";
 	public final static String Feature = "com.asdar.geofence.Feature";
@@ -51,11 +57,18 @@ public class MainActivity extends Activity{
 	private ArrayAdapter<String> draweradapter;
 	private ArrayList<String> draweritems;
 	private ActionBarDrawerToggle mDrawerToggle;
+    private PendingIntent mActivityRecognitionPendingIntent;
+    private ActivityRecognitionClient mActivityRecognitionClient;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (android.os.Build.VERSION.SDK_INT >= 9) {
 			 checkGeocoder();
 		}
+		mActivityRecognitionClient =
+                new ActivityRecognitionClient(getApplicationContext(), this, this);
+		Intent intent = new Intent(getApplicationContext(),ActivityRecognitionIntentService.class);
+        mActivityRecognitionClient.connect();
+		mActivityRecognitionPendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		mPrefs = getBaseContext().getSharedPreferences(SHARED_PREFERENCES,
 				Context.MODE_PRIVATE);
 		if (mPrefs.getInt("com.asdar.geofence.KEY_STARTID", -1) == -1) {
@@ -68,9 +81,11 @@ public class MainActivity extends Activity{
 		currentSimpleGeofences = GeofenceUtils.getSimpleGeofences(mPrefs, getApplicationContext());
 		
 		if (currentSimpleGeofences.size() > 0){
+			
 			Intent stop = new Intent();
 			stop.setAction("com.asdar.geofence.locationstop");
 			sendBroadcast(stop);
+			
 			Intent start = new Intent();
 			start.setAction("com.asdar.geofence.locationstart");
 			sendBroadcast(start);
@@ -277,6 +292,26 @@ public class MainActivity extends Activity{
 	}
 	public Location getCurrentloc() {
 		return currentloc;
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		 mActivityRecognitionClient.requestActivityUpdates(
+	               	30000,
+	                mActivityRecognitionPendingIntent);
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
