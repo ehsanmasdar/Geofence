@@ -45,17 +45,12 @@ public class BrightnessAction extends Activity implements Action {
 
 	@Override
 	public void execute(Context context) {
-		/*
-		WindowManager.LayoutParams lp = getWindow().getAttributes();
-		lp.screenBrightness = brightness;
-		getWindow().setAttributes(lp);
-		*/
         System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS_MODE, System.SCREEN_BRIGHTNESS_MODE_MANUAL);
 		System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
 	}
 
 	@Override
-	public void commit(Context context, String id) {
+	public void commit(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = mPrefs.edit();
@@ -114,7 +109,7 @@ public class BrightnessAction extends Activity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, String id)
+	public Action generateSavedState(Context context, int id)
 			 {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);

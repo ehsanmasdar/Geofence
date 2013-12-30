@@ -2,7 +2,6 @@ package com.asdar.geofence;
 
 import android.content.Context;
 
-
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -53,7 +52,7 @@ public class AudioMuteAction extends Activity implements Action {
 	}
 
 	@Override
-	public void commit(Context context, String id) {
+	public void commit(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		APP_KEY = "a6kopt2el9go62x";
@@ -119,8 +118,7 @@ public class AudioMuteAction extends Activity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, String id)
-			 {
+	public Action generateSavedState(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		Boolean b = false;
@@ -139,6 +137,7 @@ public class AudioMuteAction extends Activity implements Action {
 			return "Audio UnMuted";
 		}
 	}
+
 	@Override
 	public String listText() {
 		if (AudioMute) {
@@ -147,11 +146,12 @@ public class AudioMuteAction extends Activity implements Action {
 			return "Audio UnMuted on entry";
 		}
 	}
+
 	public void setAudioMute(boolean b) {
 		AudioMute = b;
 	}
 
-	public  String getDescription() {
+	public String getDescription() {
 		return "Mute Audio";
 	}
 }

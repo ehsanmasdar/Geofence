@@ -10,20 +10,10 @@ import android.view.ViewGroup;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.ArrayAdapter;
-import org.holoeverywhere.widget.TextView;
-
 import java.util.ArrayList;
 
-
-import org.holoeverywhere.LayoutInflater;
-import org.holoeverywhere.widget.ArrayAdapter;
-import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.ArrayList;
 
 
 

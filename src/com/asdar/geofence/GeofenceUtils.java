@@ -1,7 +1,5 @@
 package com.asdar.geofence;
 
-import android.annotation.SuppressLint;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
@@ -19,9 +17,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class GeofenceUtils {
 	private static ArrayAdapter arrayAdapter;
@@ -81,7 +78,7 @@ public final class GeofenceUtils {
 	// TODO:Fix for devices below Honeycomb
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static void save(ArrayList<Action> actionlist, Editor e,
-			String geofenceid) {
+			int geofenceid) {
 		HashSet<String> list = new HashSet<String>();
 		for (Action a : actionlist) {
 			String str = a.toString();
@@ -97,12 +94,9 @@ public final class GeofenceUtils {
 
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static List<Action> generateActionArray(String id,
+	public static List<Action> generateActionArray(int id,
 			SharedPreferences mPrefs, Context c) {
 		ArrayList<Action> list = new ArrayList<Action>();
-
-		// TODO Debug string
-		Log.d("com.asdar.geofence", "id= " + id);
 		Set<String> local = mPrefs.getStringSet(
 				GeofenceStore.getGeofenceFieldKey(id, KEY_ACTIONLIST), null);
 		for (String str : local) {
@@ -112,18 +106,15 @@ public final class GeofenceUtils {
 		return list;
 	}
 
-	public static Action queryString(String str, String id, Context context) {
+	public static Action queryString(String str, int id, Context context) {
 		try {
 			Action a = (Action) Class.forName(str).newInstance();
 			return a.generateSavedState(context, id);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -202,8 +193,6 @@ public final class GeofenceUtils {
 		Iterator i = set.iterator();
 		while (i.hasNext()) {
 			Class<?> c = (Class<?>) i.next();
-			// TODO Debug String
-			Log.d("com.asdar.geofence", "Class" + c.getName());
 			if (c.getName().toLowerCase().contains("action")
 					&& !c.getName().toLowerCase()
 							.equals("com.asdar.geofence.action")
@@ -220,8 +209,6 @@ public final class GeofenceUtils {
 				}
 			}
 		}
-		// TODO Debug String
-		Log.d("com.asdar.geofence", "Arr Size");
 		return arr.toArray(new String[0]);
 	}
 	public static ArrayList<SimpleGeofence> getSimpleGeofences(SharedPreferences mPrefs,Context c){
@@ -230,8 +217,9 @@ public final class GeofenceUtils {
 		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 				-1); i++) {
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i.toString(), c));
+					i, c));
 		}
 		return currentSimpleGeofences;
 	}
+	
 }

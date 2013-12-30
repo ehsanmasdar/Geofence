@@ -64,7 +64,10 @@ public class MapFragment extends Fragment {
 					 LatLng centeroncurrent = new LatLng(lat,lon);
 				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(centeroncurrent, 13));
 				 }
-				 
+				 else{
+					 LatLng firstgeofence = new LatLng(local.get(0).getLatitude(), local.get(0).getLongitude());
+				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstgeofence, 13));
+				 }
 			 }
 			 
 		}
