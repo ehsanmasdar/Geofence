@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:holo="http://schemas.android.com/apk/res-auto">
+        <item
+        android:id="@+id/confirm"
+        android:orderInCategory="102"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/confirm_new_geofence"
+        android:icon="@drawable/ic_menu_accept"/>
+    <item
+            android:id="@+id/add"
+            android:orderInCategory="102"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/action_add"
+            android:icon="@drawable/ic_menu_new"/>
+
+</menu>
