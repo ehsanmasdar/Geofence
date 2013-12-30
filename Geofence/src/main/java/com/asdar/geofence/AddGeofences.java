@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,7 +27,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.location.Geofence;
 
-public class AddGeofences extends FragmentActivity {
+public class AddGeofences extends ActionBarActivity {
 	private SharedPreferences mPrefs;
 	private static ActionAdapter addadapter;
 	private ListView addListView;

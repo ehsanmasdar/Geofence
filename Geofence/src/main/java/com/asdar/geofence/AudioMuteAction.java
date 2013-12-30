@@ -10,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 /**
  * Created by Ehsan on 8/23/13.
  */
-public class AudioMuteAction extends Activity implements Action {
+public class AudioMuteAction extends ActionBarActivity implements Action {
 	private boolean AudioMute;
 	private LayoutInflater vi;
 	private SharedPreferences mPrefs;

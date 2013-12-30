@@ -59,13 +59,15 @@ public final class GeofenceUtils {
 	public static void update(ArrayAdapter arrayAdapter,
 			ArrayList<?> listOfObject) {
 		arrayAdapter.clear();
-		arrayAdapter.addAll(listOfObject);
-	}
+      if (android.os.Build.VERSION.SDK_INT >= 11) {
 
-	public static void updateAdd(ArrayAdapter arrayAdapter,
-			ArrayList<Action> listOfObject) {
-		arrayAdapter.clear();
 		arrayAdapter.addAll(listOfObject);
+      }
+      else {
+          for (Object a : listOfObject){
+              arrayAdapter.add(a);
+          }
+      }
 	}
 
 	public static void update(ArrayAdapter arrayAdapter, Action a, int updatepos) {

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +16,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +36,7 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.Geofence;
 
-public class MainActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener{
+public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 
 	public final static String LOC = "com.asdar.geofence.LOC";
 	public final static String Feature = "com.asdar.geofence.Feature";
@@ -112,20 +110,20 @@ public class MainActivity extends FragmentActivity implements ConnectionCallback
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(getTitle());
+                getSupportActionBar().setTitle(getTitle());
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle("Select Geofence");
+                getSupportActionBar().setTitle("Select Geofence");
             }
         };
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 		draweritems = new ArrayList<String>();
 		draweritems.add("Home");
 		draweritems.add("Map");
@@ -227,7 +225,6 @@ public class MainActivity extends FragmentActivity implements ConnectionCallback
 		draweradapter.notifyDataSetChanged();
 	}
 
-	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	public void checkGeocoder() {
 		if (!Geocoder.isPresent()) {
 			DialogFragment alert = (DialogFragment) ErrorThrower
@@ -262,7 +259,7 @@ public class MainActivity extends FragmentActivity implements ConnectionCallback
 		// Inflate the menu; this adds items to the action bar if it is present.
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -11,6 +11,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.provider.Settings.System;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -18,7 +19,7 @@ import android.widget.TextView;
 /**
  * Created by Ehsan on 8/23/13.
  */
-public class BrightnessAction extends Activity implements Action {
+public class BrightnessAction extends ActionBarActivity implements Action {
 	private float brightness;
 	private LayoutInflater vi;
 	private SharedPreferences mPrefs;

@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +24,7 @@ import android.widget.TextView;
 import com.google.android.gms.location.Geofence;
 
 
-public class EditGeofences extends FragmentActivity {
+public class EditGeofences extends ActionBarActivity {
     private Integer idglob;
 
     protected void onCreate(Bundle savedInstanceState) {
