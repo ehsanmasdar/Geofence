@@ -31,3 +31,9 @@ proguard_logs/
 *.ipr
 *.iws
 .idea/
+
+#Android Studio .gitignore
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
