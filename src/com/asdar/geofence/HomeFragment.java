@@ -1,15 +1,11 @@
 package com.asdar.geofence;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import android.app.Fragment;
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
@@ -26,7 +22,7 @@ public class HomeFragment extends ListFragment {
 				-1); i++) {
 			
 			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i.toString(), getActivity().getApplicationContext()));
+					i, getActivity().getApplicationContext()));
 		}
 		 eventlistadapter = new EventListAdapter(getActivity().getBaseContext(),
 				R.layout.activity_main_listrow, currentSimpleGeofences);
@@ -50,7 +46,7 @@ public class HomeFragment extends ListFragment {
 			ArrayList<SimpleGeofence> localcurrentSimpleGeofences = new ArrayList<SimpleGeofence>();
 			for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 					-1); i++) {
-				localcurrentSimpleGeofences.add(ge.getGeofence(i.toString(),
+				localcurrentSimpleGeofences.add(ge.getGeofence(i,
 						getActivity().getApplicationContext()));
 			}
 

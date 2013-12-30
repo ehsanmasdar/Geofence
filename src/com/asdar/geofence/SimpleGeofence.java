@@ -1,7 +1,5 @@
 package com.asdar.geofence;
 
-import android.content.Context;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,7 +7,7 @@ import com.google.android.gms.location.Geofence;
 
 public class SimpleGeofence /*implements Parcelable */ {
     // Instance variables
-    private final String mId;
+    private final int mId;
     private String mName;
     private String mAddress;
     private final double mLatitude;
@@ -31,7 +29,7 @@ public class SimpleGeofence /*implements Parcelable */ {
      * @parma name
      * Name of Geofence.
      */
-    public SimpleGeofence(String geofenceId, String name, String address, double latitude, double longitude,
+    public SimpleGeofence(int geofenceId, String name, String address, double latitude, double longitude,
                           float radius, long expiration, int transition, int delay, int responsiveness) {
         // Set the instance fields from the constructor
         this.mId = geofenceId;
@@ -59,7 +57,7 @@ public class SimpleGeofence /*implements Parcelable */ {
     }
 
     // Instance field getters
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
@@ -98,7 +96,8 @@ public class SimpleGeofence /*implements Parcelable */ {
      */
     public Geofence toGeofence() {
         // Build a new Geofence object
-        return new Geofence.Builder().setRequestId(getId())
+    	Integer i = getId();
+        return new Geofence.Builder().setRequestId(i.toString())
                 .setTransitionTypes(mTransitionType)
                 .setCircularRegion(getLatitude(), getLongitude(), getRadius())
                 .setExpirationDuration(mExpirationDuration)
@@ -112,30 +111,6 @@ public class SimpleGeofence /*implements Parcelable */ {
     public void setName(String mName) {
         this.mName = mName;
     }
-
-    /*	@Override
-        public int describeContents() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-
-            out.writeString(mId);
-            out.writeDouble(mLatitude);
-            out.writeDouble(mLongitude);
-            out.writeFloat(mRadius);
-            out.writeLong(mExpirationDuration);
-            out.writeInt(mTransitionType);
-            if(mAudioMute){
-                out.writeInt (1);
-            }
-            else {
-                out.writeInt(0);
-            }
-        }
-        */
     public static final Parcelable.Creator<SimpleGeofence> CREATOR = new Parcelable.Creator<SimpleGeofence>() {
         public SimpleGeofence createFromParcel(Parcel in) {
             return new SimpleGeofence(in);
@@ -147,7 +122,7 @@ public class SimpleGeofence /*implements Parcelable */ {
     };
 
     private SimpleGeofence(Parcel in) {
-        mId = in.readString();
+        mId = in.readInt();
         mLatitude = in.readDouble();
         mLongitude = in.readDouble();
         mRadius = in.readFloat();

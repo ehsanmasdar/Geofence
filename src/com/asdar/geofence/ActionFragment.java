@@ -1,9 +1,10 @@
 package com.asdar.geofence;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,7 +18,7 @@ public class ActionFragment extends ListFragment {
 	    Integer id = getArguments().getInt("id");
 	    SharedPreferences mPrefs = (SharedPreferences) getActivity().getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
-    	List<Action> actionlist = GeofenceUtils.generateActionArray(id.toString(), mPrefs,getActivity().getApplicationContext());
+    	List<Action> actionlist = GeofenceUtils.generateActionArray(id, mPrefs,getActivity().getApplicationContext());
     	
     	DrawerDisplayAdapter adapter = new DrawerDisplayAdapter(getActivity().getApplicationContext(),
     			R.layout.activity_main_listrow, (ArrayList)actionlist);

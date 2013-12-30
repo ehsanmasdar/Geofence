@@ -1,10 +1,6 @@
 package com.asdar.geofence;
 
-import org.holoeverywhere.preference.Preference;
 import org.holoeverywhere.preference.PreferenceActivity;
-import org.holoeverywhere.preference.SharedPreferences;
-import org.holoeverywhere.preference.SharedPreferences.OnSharedPreferenceChangeListener;
-
 import android.os.Bundle;
 
 /**

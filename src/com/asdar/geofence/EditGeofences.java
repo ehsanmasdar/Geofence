@@ -62,14 +62,14 @@ public class EditGeofences extends Activity {
             GeofenceStore geostore = new GeofenceStore(getBaseContext());
 
             a = geo.getFromLocation(mPrefs.getFloat(geostore
-                    .getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_LATITUDE),
+                    .getGeofenceFieldKey(idglob, GeofenceUtils.KEY_LATITUDE),
                     GeofenceUtils.INVALID_FLOAT_VALUE), mPrefs.getFloat(geostore
-                    .getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_LONGITUDE),
+                    .getGeofenceFieldKey(idglob, GeofenceUtils.KEY_LONGITUDE),
                     GeofenceUtils.INVALID_FLOAT_VALUE), 1);
-            address = mPrefs.getString(geostore.getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_ADDRESS), GeofenceUtils.INVALID_STRING_VALUE);
-            Integer f = (int) mPrefs.getFloat(geostore.getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_RADIUS), GeofenceUtils.INVALID_FLOAT_VALUE);
+            address = mPrefs.getString(geostore.getGeofenceFieldKey(idglob, GeofenceUtils.KEY_ADDRESS), GeofenceUtils.INVALID_STRING_VALUE);
+            Integer f = (int) mPrefs.getFloat(geostore.getGeofenceFieldKey(idglob, GeofenceUtils.KEY_RADIUS), GeofenceUtils.INVALID_FLOAT_VALUE);
             radiusedit.setText(f.toString(), EditText.BufferType.EDITABLE);
-            nameedit.setText(mPrefs.getString(geostore.getGeofenceFieldKey(idglob.toString(), GeofenceUtils.KEY_NAME), GeofenceUtils.INVALID_STRING_VALUE), TextView.BufferType.EDITABLE);
+            nameedit.setText(mPrefs.getString(geostore.getGeofenceFieldKey(idglob, GeofenceUtils.KEY_NAME), GeofenceUtils.INVALID_STRING_VALUE), TextView.BufferType.EDITABLE);
 
         
 
@@ -102,12 +102,12 @@ public class EditGeofences extends Activity {
             sw[0] = (Switch) findViewById(R.id.EditSwitch1);
             Boolean[] b = new Boolean[GeofenceUtils.ActionNum];
             b[0] = sw[0].isChecked();
-            SimpleGeofence g = new SimpleGeofence(idglob.toString(), namedit.getText().toString(), buildAddress(s.get(0).getLatitude(), s.get(0).getLongitude()), s
+            SimpleGeofence g = new SimpleGeofence(idglob, namedit.getText().toString(), buildAddress(s.get(0).getLatitude(), s.get(0).getLongitude()), s
                     .get(0).getLatitude(), s.get(0).getLongitude(), (long)
                     Double.parseDouble(radiusedit.getText().toString()),
                     Geofence.NEVER_EXPIRE,
                     Geofence.GEOFENCE_TRANSITION_DWELL,120000,30000);
-            geofencestorage.setGeofence(idglob.toString(), g);
+            geofencestorage.setGeofence(idglob, g);
             finish();
 
         } 
