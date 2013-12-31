@@ -102,12 +102,8 @@ public class LocationService extends Service implements
 
 	public void makeForeground() {
 		Intent intent = new Intent(this, MainActivity.class);
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(MainActivity.class);
-		stackBuilder.addNextIntent(intent);
-		PendingIntent localPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(
+        PendingIntent localPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		builder.setContentTitle("Geofence");
 		builder.setSmallIcon(R.drawable.ic_launcher);

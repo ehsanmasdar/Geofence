@@ -42,7 +42,16 @@
     <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>
 
     <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
-
+      <item name="actionBarItemBackground">@drawable/selectable_background_apptheme</item>
+      <item name="popupMenuStyle">@style/PopupMenu.Apptheme</item>
+      <item name="dropDownListViewStyle">@style/DropDownListView.Apptheme</item>
+      <item name="actionBarTabStyle">@style/ActionBarTabStyle.Apptheme</item>
+      <item name="actionDropDownStyle">@style/DropDownNav.Apptheme</item>
+      <item name="actionBarStyle">@style/ActionBar.Solid.Apptheme</item>
+      <item name="actionModeBackground">@drawable/cab_background_top_apptheme</item>
+      <item name="actionModeSplitBackground">@drawable/cab_background_bottom_apptheme</item>
+      <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Apptheme</item>
+      <item name="listPreferredItemHeightSmall">48dp</item>
   </style>
 
 </resources>
