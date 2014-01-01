@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Address;
@@ -16,14 +17,17 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.google.android.gms.location.Geofence;
 
@@ -34,10 +38,8 @@ public class AddGeofences extends ActionBarActivity {
 	private ArrayList<Action> actionlist;
 	private AlertDialog mActionSelectionDialog;
 	private SimpleGeofence blah;
+    private int radius = 100;
 
-	public SimpleGeofence getGeofence() {
-		return blah;
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,38 @@ public class AddGeofences extends ActionBarActivity {
 				R.layout.activity_add_actionlist, actionlist);
 		addListView = (ListView) findViewById(R.id.addListView);
 		addListView.setAdapter(addadapter);
+        Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.distances_array_metric, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        radius = 100;
+                        break;
+                    case 1:
+                        radius = 250;
+                        break;
+                    case 2:
+                        radius = 500;
+                        break;
+                    case 3:
+                        radius = 750;
+                        break;
+                    case 4:
+                        radius = 1000;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 	}
 
 	@Override
@@ -137,15 +171,22 @@ public class AddGeofences extends ActionBarActivity {
 	}
 
 	public void commit() throws IOException {
-		EditText addressedit = (EditText) findViewById(R.id.Addressedit);
+        EditText nameedit = (EditText) findViewById(R.id.NameAdd);
+		EditText addressedit = (EditText) findViewById(R.id.AddressAdd);
 		Geocoder geo = new Geocoder(getBaseContext());
 		List<Address> s = geo.getFromLocationName(addressedit.getText()
 				.toString(), 1);
-		if (s.isEmpty()) {
+        if (nameedit.getText().length() == 0){
+            DialogFragment alert =  ErrorThrower.newInstance(
+                    "Please Enter a Name", false);
+            alert.show(getSupportFragmentManager(), "adderror");
+        }
+		else if (s.isEmpty()) {
 			DialogFragment alert =  ErrorThrower.newInstance(
 					"Address not Found", false);
 			alert.show(getSupportFragmentManager(), "adderror");
-		} else {
+		}
+        else {
 			new CommitTask().execute();
 		}
 	}
@@ -192,8 +233,7 @@ public class AddGeofences extends ActionBarActivity {
 		@Override
 		protected String doInBackground(String[] paramArrayOfString) {
 
-			EditText addressedit = (EditText) findViewById(R.id.Addressedit);
-			EditText radiusedit = (EditText) findViewById(R.id.Radiusedit);
+			EditText addressedit = (EditText) findViewById(R.id.AddressAdd);
 			EditText namedit = (EditText) findViewById(R.id.NameAdd);
 			Geocoder geo = new Geocoder(getBaseContext());
 			List<Address> s = null;
@@ -213,15 +253,13 @@ public class AddGeofences extends ActionBarActivity {
 						.getText().toString(), buildAddress(s.get(0)
 						.getLatitude(), s.get(0).getLongitude()), s.get(0)
 						.getLatitude(), s.get(0).getLongitude(),
-						Long.parseLong(radiusedit.getText().toString()),
+						radius,
 						Geofence.NEVER_EXPIRE,
 						Geofence.GEOFENCE_TRANSITION_ENTER
 								| Geofence.GEOFENCE_TRANSITION_EXIT, 0, 0);
 				geofencestorage.setGeofence(startidtemp, g);
 				editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
 				GeofenceUtils.save(actionlist, editor, startidtemp);
-				blah = g;
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -234,6 +272,13 @@ public class AddGeofences extends ActionBarActivity {
 
 		@Override
 		protected void onPostExecute(String str) {
+            Intent stop = new Intent();
+            stop.setAction("com.asdar.geofence.locationstop");
+            sendBroadcast(stop);
+
+            Intent start = new Intent();
+            start.setAction("com.asdar.geofence.locationstart");
+            sendBroadcast(start);
 			this.dialog.dismiss();
 			finish();
 		}

@@ -87,10 +87,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 		else{
 			Log.d("com.asdar.geofence","service instance already exists.");
 		}
-        //TODO debug
 		// show layout
 		setContentView(R.layout.activity_main);
-        //TODO debug
 		// Initialize drawer
 		OnItemClickListener drawerItemClick = new OnItemClickListener() {
 			@Override
@@ -137,8 +135,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 		mDrawerList.setAdapter(draweradapter);
 		mDrawerList.setOnItemClickListener(drawerItemClick);
 		swapFragment(-2);
-        //TODO debug
-        Log.d("com.asdar.geofence","init done");
 	}
 
 	public void swapFragment(int i) {
@@ -292,10 +288,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 	}
 
 	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onConnectionFailed(ConnectionResult arg0) {			}
 
 	@Override
 	public void onConnected(Bundle arg0) {
@@ -308,7 +301,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 	@Override
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

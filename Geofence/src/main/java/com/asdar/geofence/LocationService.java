@@ -64,7 +64,7 @@ public class LocationService extends Service implements
 		Log.d("com.asdar.geofence", "");
 		currentLocationUpdateRequest = interval;
 		mLocationRequest = new LocationRequest().setPriority(
-				LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(interval);
+				LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(interval)/*TODO:removed for testing .setSmallestDisplacement(5)*/;
 		mLocationClient = new LocationClient(this, this, this);
 		mLocationClient.connect();
 	}
@@ -76,8 +76,8 @@ public class LocationService extends Service implements
 			mLocationClient.removeLocationUpdates(this);
 			if(changedinterval != -1){
 				LocationRequest localrequest = new LocationRequest().setPriority(
-						LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(
-						changedinterval);
+						LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(
+						changedinterval)/*TODO:removed for testing .setSmallestDisplacement(5)*/;
 				mLocationClient.requestLocationUpdates(localrequest, this);
 
 			}
@@ -88,13 +88,13 @@ public class LocationService extends Service implements
 	private int computeInterval(int action) {
 		switch(action){
 			case DetectedActivity.IN_VEHICLE:
-				return 10000;
+				return 30000;
 			case DetectedActivity.ON_BICYCLE:
-				return 20000;
+				return 50000;
 			case DetectedActivity.STILL:
 				return -1;
 			case DetectedActivity.UNKNOWN:
-				return 60000;
+				return 10000;
 		
 		}
 		return 0;

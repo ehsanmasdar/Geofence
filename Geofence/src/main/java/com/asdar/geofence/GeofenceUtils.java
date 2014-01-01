@@ -126,8 +126,9 @@ public final class GeofenceUtils {
             return new ArrayList<String>();
         }
         else{
-            local = local.replace(']',' ');
-            local = local.replace('[',' ');
+            local = local.replace("]","" );
+            local = local.replace("[","");
+            local = local.replace(" ","" );
             local = local.trim();
             ArrayList<Integer> commas = countOccurrences(local,',');
             int prev = -1;
@@ -194,7 +195,6 @@ public final class GeofenceUtils {
         Iterator i = set.iterator();
         while (i.hasNext()) {
             Class<?> c = (Class<?>) i.next();
-            Log.d("com.asdar.geofence", "Class" + c.getName());
             if (c.getName().toLowerCase().contains("action")
                     && !c.getName().toLowerCase()
                     .equals("com.asdar.geofence.action")
@@ -205,7 +205,6 @@ public final class GeofenceUtils {
                 arr.add(c.getName());
             }
         }
-        Log.d("com.asdar.geofence", "Arr Size");
         return arr.toArray(new String[0]);
     }
 

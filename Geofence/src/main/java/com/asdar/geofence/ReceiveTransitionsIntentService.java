@@ -20,9 +20,7 @@ import android.util.Log;
 import com.google.android.gms.location.Geofence;
 
 public class ReceiveTransitionsIntentService extends IntentService {
-    /**
-     * Sets an identifier for the service
-     */
+
    
     private GeofenceStore g;
     public static final boolean INVALID_BOOLEAN_VALUE = false;
@@ -35,13 +33,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
         super("ReceiveTransitionsIntentService");
     }
 
-    /**
-     * Handles incoming intents
-     *
-     * @param intent The Intent sent by Location Services. This Intent is provided
-     *               to Location Services (inside a PendingIntent) when you call
-     *               addGeofences()
-     */
     protected void onHandleIntent(Intent intent) {
         mPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
