@@ -43,18 +43,18 @@ public class ReceiveTransitionsIntentService extends IntentService {
                     || (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) || (transitionType == Geofence.GEOFENCE_TRANSITION_DWELL)) {
                 int triggerID = intent.getIntExtra("id", 0);
                 String notificationbuilder = "";
+                if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER || transitionType == Geofence.GEOFENCE_TRANSITION_DWELL){
                     List<Action> locallist = GeofenceUtils.generateActionArray(triggerID, mPrefs, getApplicationContext());
 
                     for (Action a : locallist) {
                         notificationbuilder = (a.notificationText()) + ", ";
-                        
+
                         if (notificationbuilder.length() >0){
-                        	notificationbuilder = notificationbuilder.substring(0,notificationbuilder.length()-2);
+                            notificationbuilder = notificationbuilder.substring(0,notificationbuilder.length()-2);
                         }
                         a.execute(getApplicationContext());
                     }
-                
-
+                }
                 try {
                     if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER || transitionType == Geofence.GEOFENCE_TRANSITION_DWELL ) {
                         sendNotification(triggerID, notificationbuilder , false);
