@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -75,11 +76,11 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 		currentSimpleGeofences = GeofenceUtils.getSimpleGeofences(mPrefs, getApplicationContext());
 		
 		if (currentSimpleGeofences.size() > 0){
-			
+
 			Intent stop = new Intent();
 			stop.setAction("com.asdar.geofence.locationstop");
 			sendBroadcast(stop);
-			
+
 			Intent start = new Intent();
 			start.setAction("com.asdar.geofence.locationstart");
 			sendBroadcast(start);
@@ -144,7 +145,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			fragmentManager.beginTransaction()
-					.replace(R.id.content_frame, fragment).commit();
+					.replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
 			// Highlight the selected item, update the title, and close the
 			// drawer
 			mDrawerList.setItemChecked(0, true);
@@ -157,7 +158,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			fragmentManager.beginTransaction()
-					.replace(R.id.content_frame, fragment).commit();
+					.replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
 			// Highlight the selected item, update the title, and close the
 			// drawer
 			mDrawerList.setItemChecked(1, true);
@@ -174,7 +175,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			fragmentManager.beginTransaction()
-					.replace(R.id.content_frame, fragment).commit();
+					.replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
 			// Highlight the selected item, update the title, and close the
 			// drawer
 			mDrawerList.setItemChecked(i+2, true);
