@@ -224,7 +224,12 @@ public final class GeofenceUtils {
         Enumeration<String> entries = dex.entries();
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();
-            if (entry.toLowerCase().startsWith(packageName.toLowerCase()))
+            if (entry.toLowerCase().startsWith(packageName.toLowerCase())
+                    && entry.toLowerCase().contains("action")
+                    && !entry.toLowerCase().equals("com.asdar.geofence.action")
+                    && !entry.toLowerCase().equals("com.asdar.geofence.actionadapter")
+                    && !entry.toLowerCase().equals("com.asdar.geofence.actionfragment")
+                    && !entry.contains("$"))
                 classes.add(classLoader.loadClass(entry));
         }
         return classes;
@@ -245,13 +250,6 @@ public final class GeofenceUtils {
         Iterator i = set.iterator();
         while (i.hasNext()) {
             Class<?> c = (Class<?>) i.next();
-            if (c.getName().toLowerCase().contains("action")
-                    && !c.getName().toLowerCase()
-                    .equals("com.asdar.geofence.action")
-                    && !c.getName().toLowerCase()
-                    .equals("com.asdar.geofence.actionadapter")
-                    && !c.getName().toLowerCase().equals("com.asdar.geofence.actionfragment")
-                    && !c.getName().contains("$")) {
                 try {
                     arr.add(((Action) (c.newInstance())).getDescription());
                 } catch (InstantiationException e) {
@@ -259,7 +257,6 @@ public final class GeofenceUtils {
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-            }
         }
         return arr.toArray(new String[0]);
     }
