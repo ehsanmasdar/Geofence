@@ -6,12 +6,12 @@
         android:orderInCategory="102"
         app:showAsAction="ifRoom|withText"
         android:title="@string/confirm_new_geofence"
-        android:icon="@drawable/ic_menu_accept"/>
+        android:icon="@drawable/ic_action_accept"/>
     <item
         android:id="@+id/add"
         android:orderInCategory="102"
         app:showAsAction="ifRoom|withText"
         android:title="@string/action_add"
-        android:icon="@drawable/ic_menu_new"/>
+        android:icon="@drawable/ic_action_new"/>
 
 </menu>
