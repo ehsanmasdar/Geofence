@@ -272,7 +272,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-        return aBoolean;
+        return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
