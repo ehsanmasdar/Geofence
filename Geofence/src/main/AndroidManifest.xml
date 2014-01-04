@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.asdar.geofence.AudioMuteAction"
+            android:name=".ActionRunner.AudioMuteAction"
             android:label="test" />
         <activity
             android:name="com.asdar.geofence.SettingsActivity"

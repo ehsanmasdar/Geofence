@@ -1,26 +1,29 @@
-package com.asdar.geofence;
+package com.asdar.geofence.ActionRunner;
 
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
+import android.media.AudioManager;
 import android.os.Bundle;
-import android.provider.Settings.System;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.asdar.geofence.Action;
+import com.asdar.geofence.AddGeofences;
+import com.asdar.geofence.GeofenceStore;
+import com.asdar.geofence.GeofenceUtils;
+import com.asdar.geofence.R;
+
 /**
  * Created by Ehsan on 8/23/13.
  */
-public class BrightnessAction extends ActionBarActivity implements Action {
-	private float brightness;
+public class AudioMuteAction extends ActionBarActivity implements Action {
+	private boolean AudioMute;
 	private LayoutInflater vi;
 	private SharedPreferences mPrefs;
 	private String APP_KEY;
@@ -30,54 +33,62 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 		super.onCreate(savedInstanceState);
 	}
 
-	public BrightnessAction() {
-		brightness = -1;
+	public AudioMuteAction() {
+		AudioMute = false;
 	}
 
-	public BrightnessAction(float b) {
-		brightness = b ;
+	public AudioMuteAction(boolean b) {
+		AudioMute = b;
 	}
 
 	@Override
 	public void execute(Context context) {
-        System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS_MODE, System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-		System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
+		AudioManager m = (AudioManager) context
+				.getSystemService(Context.AUDIO_SERVICE);
+		if (AudioMute) {
+			m.setRingerMode(m.RINGER_MODE_SILENT);
+		} else {
+			m.setRingerMode(m.RINGER_MODE_NORMAL);
+		}
 	}
 
 	@Override
 	public void commit(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+		APP_KEY = "a6kopt2el9go62x";
+		APP_SECRET = "r5nhykcj43f0rbj";
 		Editor editor = mPrefs.edit();
 		// Write the Geofence values to SharedPreferences
-		editor.putFloat(GeofenceStore.getGeofenceFieldKey(id,
-				GeofenceUtils.KEY_BRIGHTNESS), brightness);
+		editor.putBoolean(GeofenceStore.getGeofenceFieldKey(id,
+                GeofenceUtils.KEY_AUDIO_MUTE), AudioMute);
 		editor.commit();
 
 	}
 
 	@Override
-	public Dialog editDialog(Context context) {
+	public AlertDialog editDialog (Context context) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle("Set Options");
-		builder.setNegativeButton("Brightness 100",
+		builder.setNegativeButton("Mute",
 				new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						brightness  = 100;
+						AudioMute = true;
 						AddGeofences.refreshAddAdapter();
 					}
 				});
-		builder.setPositiveButton("Brightness 0",
+		builder.setPositiveButton("Unmute",
 				new DialogInterface.OnClickListener() {
+
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						brightness  = 0;
+						AudioMute = false;
 						AddGeofences.refreshAddAdapter();
 					}
 				});
-		builder.setMessage("Set desired brightness");
+		builder.setMessage("Would you like the Audio to be Muted or Unmuted when this location is reached?");
 		builder.setCancelable(false);
 		return builder.create();
 	}
@@ -92,10 +103,14 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 			TextView tt = (TextView) v.findViewById(R.id.toptext);
 			TextView bt = (TextView) v.findViewById(R.id.bottomtext);
 			if (tt != null) {
-				tt.setText((++position) + ". " + "Brightness");
+				tt.setText((++position) + ". " + "Audio Mute");
 			}
 			if (bt != null) {
-				bt.setText("Brightness will be changed to " + brightness);
+				if (AudioMute) {
+					bt.setText("Audio Will be Muted");
+				} else {
+					bt.setText("Audio Will be Unmuted");
+				}
 				bt.setTypeface(Typeface.DEFAULT, 2);
 			}
 		}
@@ -104,34 +119,40 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, int id)
-			 {
+	public Action generateSavedState(Context context, int id) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		float b = 0;
+		Boolean b = false;
 
-		b = mPrefs.getFloat(GeofenceStore.getGeofenceFieldKey(id,
-				GeofenceUtils.KEY_BRIGHTNESS), -1);
+		b = mPrefs.getBoolean(GeofenceStore.getGeofenceFieldKey(id,
+				GeofenceUtils.KEY_AUDIO_MUTE), false);
 
-		return new BrightnessAction(b);
+		return new AudioMuteAction(b);
 	}
 
 	@Override
 	public String notificationText() {
-		return "Brightness changed to " + brightness; 
-	}
-
-	public void setBrightness(float b) {
-		brightness = b;
-	}
-
-	public String getDescription() {
-		return "Change Brightness";
+		if (AudioMute) {
+			return "Audio Muted";
+		} else {
+			return "Audio UnMuted";
+		}
 	}
 
 	@Override
 	public String listText() {
-		// TODO Auto-generated method stub
-		return "Brightness will changed to " + brightness;
+		if (AudioMute) {
+			return "Audio Muted on entry";
+		} else {
+			return "Audio UnMuted on entry";
+		}
+	}
+
+	public void setAudioMute(boolean b) {
+		AudioMute = b;
+	}
+
+	public String getDescription() {
+		return "Mute Audio";
 	}
 }
