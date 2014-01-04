@@ -32,6 +32,7 @@ public class LocationService extends Service implements
 	LocationRequest mLocationRequest;
 	SharedPreferences mPrefs;
 	ArrayList<Integer> entered;
+    private int priority_preference;
 	private int currentLocationUpdateRequest;
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -49,6 +50,7 @@ public class LocationService extends Service implements
 		Editor e = mPrefs.edit();
 		e.putInt("com.asdar.geofence.SERVICESTARTID", startID);
 		e.commit();
+        priority_preference = Integer.parseInt(mPrefs.getString("pref_locpriority","102"));
 		makeForeground();
 		startLocationListening(10000);
 		entered = new ArrayList<Integer>();
@@ -59,10 +61,9 @@ public class LocationService extends Service implements
 	}
 
 	public void startLocationListening(int interval) {
-		Log.d("com.asdar.geofence", "");
 		currentLocationUpdateRequest = interval;
 		mLocationRequest = new LocationRequest().setPriority(
-				LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(interval)/*TODO:removed for testing .setSmallestDisplacement(5)*/;
+                priority_preference).setInterval(interval)/*TODO:removed for testing .setSmallestDisplacement(5)*/;
 		mLocationClient = new LocationClient(this, this, this);
 		mLocationClient.connect();
 	}
@@ -74,7 +75,7 @@ public class LocationService extends Service implements
 			mLocationClient.removeLocationUpdates(this);
 			if(changedinterval != -1){
 				LocationRequest localrequest = new LocationRequest().setPriority(
-						LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(
+                        priority_preference).setInterval(
 						changedinterval)/*TODO:removed for testing .setSmallestDisplacement(5)*/;
 				mLocationClient.requestLocationUpdates(localrequest, this);
 

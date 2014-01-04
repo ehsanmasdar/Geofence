@@ -1,5 +1,6 @@
 package com.asdar.geofence;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
@@ -15,6 +16,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPreferenceManager().setSharedPreferencesName(GeofenceUtils.SHARED_PREFERENCES);
         addPreferencesFromResource(R.xml.preferences);
     }
     
@@ -31,6 +33,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			modified.setTitle(res.getString(R.string.DropboxLink));
 			modified.setSummary(res.getString(R.string.DroboxLinkSum));
 		}
+        else if (key.equals("pref_locpriority")){
+            Intent stop = new Intent();
+            stop.setAction("com.asdar.geofence.locationstop");
+            getActivity().sendBroadcast(stop);
+            Intent start = new Intent();
+            start.setAction("com.asdar.geofence.locationstart");
+            getActivity().sendBroadcast(start);
+        }
 	}
 	@Override
 	public void onResume() {

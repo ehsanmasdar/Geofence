@@ -38,4 +38,9 @@
         <item>750m</item>
         <item>1000m</item>
     </string-array>
+    <string name="location_priority">Location Mode</string>
+    <string name="location_priority_selection">Select a Mode</string>
+    <string name="balancedpowersummary">Balaced Power</string>
+    <string name="location_priority_summary">App wide location mode. Higher power modes are more accurate and responsive.</string>
+
 </resources>

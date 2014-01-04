@@ -8,5 +8,13 @@
                 android:defaultValue="false"
                 >
     </CheckBoxPreference>
-
+    <ListPreference
+        android:key="pref_locpriority"
+        android:title="@string/location_priority"
+        android:summary="@string/location_priority_summary"
+        android:dialogTitle="@string/location_priority_selection"
+        android:entries="@array/location_priority_array"
+        android:entryValues="@array/location_priority_values"
+        android:defaultValue="102" >
+    </ListPreference>
 </PreferenceScreen>
