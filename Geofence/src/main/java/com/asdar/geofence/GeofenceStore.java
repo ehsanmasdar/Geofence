@@ -1,7 +1,6 @@
 package com.asdar.geofence;
 
 import android.content.Context;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
@@ -148,7 +147,7 @@ public class GeofenceStore {
      * @param fieldName The field represented by the key
      * @return The full key name of a value in SharedPreferences
      */
-    static String getGeofenceFieldKey(int id, String fieldName) {
+    public static String getGeofenceFieldKey(int id, String fieldName) {
         return GeofenceUtils.KEY_PREFIX + "." + id + "." + fieldName;
     }
 

@@ -1,10 +1,5 @@
 package com.asdar.geofence;
 
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +7,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +16,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.gms.location.Geofence;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class EditGeofences extends ActionBarActivity {
@@ -79,9 +77,6 @@ public class EditGeofences extends ActionBarActivity {
         EditText radiusedit = (EditText) findViewById(R.id.Radiusedit);
         EditText namedit = (EditText) findViewById(R.id.NameEdit);
         Geocoder geo = new Geocoder(getBaseContext());
-        //TODO debug string
-        System.out.println("Address edit.tostring"
-                + addressedit.getText().toString());
         List<Address> s = geo.getFromLocationName(addressedit.getText()
                 .toString(), 1);
         if (s.isEmpty()) {
@@ -150,7 +145,6 @@ public class EditGeofences extends ActionBarActivity {
                 try {
                     commit();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 break;

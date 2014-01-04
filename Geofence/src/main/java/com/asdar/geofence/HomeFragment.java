@@ -1,14 +1,13 @@
 package com.asdar.geofence;
 
-import java.util.ArrayList;
-
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class HomeFragment extends ListFragment {
 	private EventListAdapter eventlistadapter;

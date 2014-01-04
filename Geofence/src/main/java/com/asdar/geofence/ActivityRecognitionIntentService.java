@@ -17,7 +17,6 @@
 package com.asdar.geofence;
 
 import android.app.IntentService;
-
 import android.content.Intent;
 import android.util.Log;
 

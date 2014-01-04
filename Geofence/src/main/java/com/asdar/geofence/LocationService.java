@@ -1,11 +1,7 @@
 package com.asdar.geofence;
 
-import java.util.ArrayList;
-
-
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +21,8 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+
+import java.util.ArrayList;
 
 public class LocationService extends Service implements
 		GooglePlayServicesClient.ConnectionCallbacks,

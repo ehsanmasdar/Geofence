@@ -1,8 +1,5 @@
 package com.asdar.geofence;
 
-import java.util.ArrayList;
-
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,11 +9,14 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 public class MapFragment extends Fragment {
 
 	private SupportMapFragment fragment;
@@ -60,11 +60,11 @@ public class MapFragment extends Fragment {
 					 double lat = ((MainActivity) a).getCurrentloc().getLatitude();
 					 double lon = ((MainActivity) a).getCurrentloc().getLongitude();
 					 LatLng centeroncurrent = new LatLng(lat,lon);
-				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(centeroncurrent, 13));
+				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(centeroncurrent, 14));
 				 }
 				 else{
 					 LatLng firstgeofence = new LatLng(local.get(0).getLatitude(), local.get(0).getLongitude());
-				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstgeofence, 13));
+				     map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstgeofence, 14));
 				 }
 			 }
 			 

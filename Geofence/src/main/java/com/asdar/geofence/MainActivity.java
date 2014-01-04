@@ -1,10 +1,5 @@
 package com.asdar.geofence;
 
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
@@ -36,11 +30,14 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.LocationClient;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 
-	public final static String LOC = "com.asdar.geofence.LOC";
-	public final static String Feature = "com.asdar.geofence.Feature";
 	public  Location currentloc;
 	private GeofenceStore geofencestorage;
 	private List<Geofence> currentGeofences;
@@ -54,11 +51,14 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 	private ActionBarDrawerToggle mDrawerToggle;
     private PendingIntent mActivityRecognitionPendingIntent;
     private ActivityRecognitionClient mActivityRecognitionClient;
+    private LocationClient mLocationClient;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (android.os.Build.VERSION.SDK_INT >= 9) {
 			 checkGeocoder();
 		}
+        mLocationClient = new LocationClient(this, this, this);
+        mLocationClient.connect();
 		mActivityRecognitionClient =
                 new ActivityRecognitionClient(getApplicationContext(), this, this);
 		Intent intent = new Intent(getApplicationContext(),ActivityRecognitionIntentService.class);
@@ -293,16 +293,20 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		 mActivityRecognitionClient.requestActivityUpdates(
-	               	30000,
-	                mActivityRecognitionPendingIntent);
+        if (mActivityRecognitionClient != null && mActivityRecognitionClient.isConnected()){
+            mActivityRecognitionClient.requestActivityUpdates(
+                    30000,
+                    mActivityRecognitionPendingIntent);
+            mActivityRecognitionClient.disconnect();
+        }
+        if (mLocationClient != null && mLocationClient.isConnected()){
+            currentloc = mLocationClient.getLastLocation();
+            mLocationClient.disconnect();
+        }
 
 	}
 
 	@Override
-	public void onDisconnected() {
-		// TODO Auto-generated method stub
-
-	}
+	public void onDisconnected() {}
 
 }

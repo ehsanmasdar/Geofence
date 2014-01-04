@@ -1,9 +1,5 @@
 package com.asdar.geofence;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,10 +8,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -25,13 +21,32 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.LocationClient;
 
-public class AddGeofences extends ActionBarActivity {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AddGeofences extends ActionBarActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	private SharedPreferences mPrefs;
 	private static ActionAdapter addadapter;
 	private ListView addListView;
@@ -39,11 +54,18 @@ public class AddGeofences extends ActionBarActivity {
 	private AlertDialog mActionSelectionDialog;
 	private SimpleGeofence blah;
     private int radius = 100;
+    private LocationClient mlocationClient;
+    private Location currentLoc;
+    private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+    private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
+    private static final String OUT_JSON = "/json";
+    private static final String API_KEY = "AIzaSyBV15lTOpTwK2Jkv_zxWwfRyU8DsasucAY";
 
-
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        mlocationClient = new LocationClient(this,this,this);
+        mlocationClient.connect();
 		mPrefs = getBaseContext().getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		
@@ -85,7 +107,9 @@ public class AddGeofences extends ActionBarActivity {
 
             }
         });
-	}
+        AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
+        addressedit.setAdapter(new PlacesAutoCompleteAdapter(getApplicationContext(), R.layout.list_item ));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,7 +126,6 @@ public class AddGeofences extends ActionBarActivity {
 			try {
 				commit();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -110,10 +133,8 @@ public class AddGeofences extends ActionBarActivity {
 			try {
 				startAddActivity();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -143,13 +164,10 @@ public class AddGeofences extends ActionBarActivity {
 				try {
 					a = (Action) Class.forName(classNames[i]).newInstance();
 				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mActionSelectionDialog.dismiss();
@@ -172,39 +190,17 @@ public class AddGeofences extends ActionBarActivity {
 
 	public void commit() throws IOException {
         EditText nameedit = (EditText) findViewById(R.id.NameAdd);
-		EditText addressedit = (EditText) findViewById(R.id.AddressAdd);
-		Geocoder geo = new Geocoder(getBaseContext());
-		List<Address> s = geo.getFromLocationName(addressedit.getText()
-				.toString(), 1);
+        AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
         if (nameedit.getText().length() == 0){
             DialogFragment alert =  ErrorThrower.newInstance(
                     "Please Enter a Name", false);
             alert.show(getSupportFragmentManager(), "adderror");
         }
-		else if (s.isEmpty()) {
-			DialogFragment alert =  ErrorThrower.newInstance(
-					"Address not Found", false);
-			alert.show(getSupportFragmentManager(), "adderror");
-		}
+		//TODO Add debug for address
         else {
 			new CommitTask().execute();
 		}
 	}
-
-	public String buildAddress(Double latitude, Double logitude)
-			throws IOException {
-		Geocoder geo = new Geocoder(getBaseContext());
-		String convert = " ";
-
-		List<Address> georesults = geo.getFromLocation(latitude, logitude, 1);
-		for (int i = 0; i < georesults.get(0).getMaxAddressLineIndex(); i++) {
-			convert = convert + georesults.get(0).getAddressLine(i) + " ";
-
-		}
-		return convert;
-
-	}
-
 	@Override
 	public void onBackPressed() {
 
@@ -223,7 +219,23 @@ public class AddGeofences extends ActionBarActivity {
 
 	}
 
-	public class CommitTask extends AsyncTask<String, String, String> {
+    @Override
+    public void onConnected(Bundle bundle) {
+        currentLoc = mlocationClient.getLastLocation();
+        mlocationClient.disconnect();
+    }
+
+    @Override
+    public void onDisconnected() {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    public class CommitTask extends AsyncTask<String, String, String> {
 		ProgressDialog dialog;
 
 		public CommitTask() {
@@ -233,37 +245,36 @@ public class AddGeofences extends ActionBarActivity {
 		@Override
 		protected String doInBackground(String[] paramArrayOfString) {
 
-			EditText addressedit = (EditText) findViewById(R.id.AddressAdd);
+            AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
 			EditText namedit = (EditText) findViewById(R.id.NameAdd);
-			Geocoder geo = new Geocoder(getBaseContext());
-			List<Address> s = null;
-			try {
-				s = geo.getFromLocationName(addressedit.getText().toString(), 1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 			int startidtemp = 0;
 			Editor editor = mPrefs.edit();
-			try {
+            List<Address> s = null;
+            try {
+                Geocoder geo = new Geocoder(getBaseContext());
+                s = geo.getFromLocationName(addressedit.getText().toString(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 				GeofenceStore geofencestorage = new GeofenceStore(
 						AddGeofences.this);
 				startidtemp = mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
 						-1);
-				SimpleGeofence g = new SimpleGeofence(startidtemp, namedit
-						.getText().toString(), buildAddress(s.get(0)
-						.getLatitude(), s.get(0).getLongitude()), s.get(0)
-						.getLatitude(), s.get(0).getLongitude(),
+				SimpleGeofence g = new SimpleGeofence(
+                        startidtemp,
+                        namedit.getText().toString(),
+                        buildAddress(s.get(0)),
+                        s.get(0).getLatitude(),
+                        s.get(0).getLongitude(),
 						radius,
 						Geofence.NEVER_EXPIRE,
-						Geofence.GEOFENCE_TRANSITION_ENTER
-								| Geofence.GEOFENCE_TRANSITION_EXIT, 0, 0);
+						Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT,
+                        0,
+                        0
+                        );
 				geofencestorage.setGeofence(startidtemp, g);
 				editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
 				GeofenceUtils.save(actionlist, editor, startidtemp);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
 			for (Action a : actionlist) {
 				a.commit(getApplicationContext(), startidtemp);
 			}
@@ -292,4 +303,111 @@ public class AddGeofences extends ActionBarActivity {
 
 		}
 	}
+
+    public String buildAddress(Address a) {
+        String convert = "";
+        for (int i = 0; i < a.getMaxAddressLineIndex(); i++) {
+            convert = convert + a.getAddressLine(i) + " ";
+
+        }
+        return convert;
+
+    }
+
+    private class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
+        private ArrayList<String> resultList;
+        private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+        private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
+        private static final String OUT_JSON = "/json";
+        private static final String API_KEY = "AIzaSyBV15lTOpTwK2Jkv_zxWwfRyU8DsasucAY";
+        public PlacesAutoCompleteAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+        }
+
+        @Override
+        public int getCount() {
+            return resultList.size();
+        }
+
+        @Override
+        public String getItem(int index) {
+            return resultList.get(index);
+        }
+
+        @Override
+        public Filter getFilter() {
+            Filter filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults filterResults = new FilterResults();
+                    if (constraint != null) {
+                        // Retrieve the autocomplete results.
+                        resultList = autocomplete(constraint.toString());
+                        // Assign the data to the FilterResults
+                        filterResults.values = resultList;
+                        filterResults.count = resultList.size();
+                    }
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    if (results != null && results.count > 0) {
+                        notifyDataSetChanged();
+                    }
+                    else {
+                        notifyDataSetInvalidated();
+                    }
+                }};
+            return filter;
+        }
+
+        private ArrayList<String> autocomplete(String s) {
+            ArrayList<String> resultsList = null;
+            HttpURLConnection conn = null;
+            StringBuilder jsonResults = new StringBuilder();
+            try {
+                StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
+                sb.append("?input=" + URLEncoder.encode(s, "utf8"));
+                if(currentLoc != null){
+                    sb.append("&location=" + currentLoc.getLatitude() + "," + currentLoc.getLongitude());
+                    sb.append("&radius=" + 500);
+                }
+                sb.append("&sensor=true&key=" + API_KEY);
+                URL url = new URL(sb.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                InputStreamReader in = new InputStreamReader(conn.getInputStream());
+                int read;
+                char[] buff = new char[1024];
+                while ((read = in.read(buff)) != -1) {
+                    jsonResults.append(buff, 0, read);
+                }
+            }
+            catch (MalformedURLException e) {
+                Log.e("com.asdar.geofence", "Error processing Places API URL", e);
+                return resultList;
+            } catch (IOException e) {
+                Log.e("com.asdar.geofence", "Error connecting to Places API", e);
+                return resultList;
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+            try {
+                // Create a JSON object hierarchy from the results
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
+                // Extract the Place descriptions from the results
+                resultList = new ArrayList<String>(predsJsonArray.length());
+                for (int i = 0; i < predsJsonArray.length(); i++) {
+                    resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+                }
+            } catch (JSONException e) {
+                Log.e("com.asdar.geofence", "Cannot process JSON results", e);
+            }
+            return resultList;
+        }
+
+    }
 }

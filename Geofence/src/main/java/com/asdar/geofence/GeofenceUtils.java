@@ -75,7 +75,6 @@ public final class GeofenceUtils {
         arrayAdapter.add(a);
     }
 
-    // TODO:Fix for devices below Honeycomb
     public static void save(ArrayList<Action> actionlist, Editor e,
                             int geofenceid) {
         HashSet<String> list = new HashSet<String>();
@@ -191,19 +190,11 @@ public final class GeofenceUtils {
     public static String[] generateOptions(Context context)
             throws ClassNotFoundException, IOException {
         ArrayList<String> arr = new ArrayList<String>();
-        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence");
+        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence.actionrunner");
         Iterator i = set.iterator();
         while (i.hasNext()) {
             Class<?> c = (Class<?>) i.next();
-            if (c.getName().toLowerCase().contains("action")
-                    && !c.getName().toLowerCase()
-                    .equals("com.asdar.geofence.action")
-                    && !c.getName().toLowerCase()
-                    .equals("com.asdar.geofence.actionadapter")
-                    && !c.getName().toLowerCase().equals("com.asdar.geofence.actionfragment")
-                    && !c.getName().contains("$")) {
                 arr.add(c.getName());
-            }
         }
         return arr.toArray(new String[0]);
     }
@@ -225,12 +216,9 @@ public final class GeofenceUtils {
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();
             if (entry.toLowerCase().startsWith(packageName.toLowerCase())
-                    && entry.toLowerCase().contains("action")
-                    && !entry.toLowerCase().equals("com.asdar.geofence.action")
-                    && !entry.toLowerCase().equals("com.asdar.geofence.actionadapter")
-                    && !entry.toLowerCase().equals("com.asdar.geofence.actionfragment")
-                    && !entry.contains("$"))
+                    && !entry.contains("$")){
                 classes.add(classLoader.loadClass(entry));
+            }
         }
         return classes;
     }
@@ -246,7 +234,7 @@ public final class GeofenceUtils {
     public static String[] generateNames(Context context)
             throws ClassNotFoundException, IOException {
         ArrayList<String> arr = new ArrayList<String>();
-        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence");
+        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence.actionrunner");
         Iterator i = set.iterator();
         while (i.hasNext()) {
             Class<?> c = (Class<?>) i.next();
