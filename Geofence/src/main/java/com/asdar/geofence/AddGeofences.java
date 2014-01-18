@@ -193,7 +193,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
         if (nameedit.getText().length() == 0){
             DialogFragment alert =  ErrorThrower.newInstance(
-                    "Please Enter a Name", false);
+                    "Enter a Name", false);
             alert.show(getSupportFragmentManager(), "adderror");
         }
 		//TODO Add debug for address

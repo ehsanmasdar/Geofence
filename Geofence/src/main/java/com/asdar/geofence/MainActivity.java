@@ -53,7 +53,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private PendingIntent mActivityRecognitionPendingIntent;
     private ActivityRecognitionClient mActivityRecognitionClient;
     private LocationClient mLocationClient;
-    private boolean aBoolean;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +102,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList.setBackgroundColor(getResources().getColor(android.R.color.background_light));
         mDrawerToggle = new
                 ActionBarDrawerToggle(
                         this,                  /* host Activity */
