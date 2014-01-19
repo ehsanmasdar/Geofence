@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -47,34 +48,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddGeofences extends ActionBarActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
-	private SharedPreferences mPrefs;
-	private static ActionAdapter addadapter;
-	private ListView addListView;
-	private ArrayList<Action> actionlist;
-	private AlertDialog mActionSelectionDialog;
-	private SimpleGeofence blah;
-    private int radius = 100;
-    private LocationClient mlocationClient;
-    private Location currentLoc;
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
     private static final String OUT_JSON = "/json";
     private static final String API_KEY = "AIzaSyBV15lTOpTwK2Jkv_zxWwfRyU8DsasucAY";
+    private static ActionAdapter addadapter;
+    private SharedPreferences mPrefs;
+    private ListView addListView;
+    private ArrayList<Action> actionlist;
+    private AlertDialog mActionSelectionDialog;
+    private SimpleGeofence blah;
+    private int radius = 100;
+    private LocationClient mlocationClient;
+    private Location currentLoc;
+
+    public static void refreshAddAdapter() {
+        addadapter.notifyDataSetChanged();
+    }
 
     @Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        mlocationClient = new LocationClient(this,this,this);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mlocationClient = new LocationClient(this, this, this);
         mlocationClient.connect();
-		mPrefs = getBaseContext().getSharedPreferences(
-				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		
-		setContentView(R.layout.activity_add);
-		actionlist = new ArrayList<Action>();
-		addadapter = new ActionAdapter(getBaseContext(),
-				R.layout.activity_add_actionlist, actionlist);
-		addListView = (ListView) findViewById(R.id.addListView);
-		addListView.setAdapter(addadapter);
+        mPrefs = getBaseContext().getSharedPreferences(
+                GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
+        setContentView(R.layout.activity_add);
+        actionlist = new ArrayList<Action>();
+        addadapter = new ActionAdapter(getBaseContext(),
+                R.layout.activity_add_actionlist, actionlist);
+        addListView = (ListView) findViewById(R.id.addListView);
+        addListView.setAdapter(addadapter);
         Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.distances_array_metric, android.R.layout.simple_spinner_item);
@@ -83,7 +88,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i){
+                switch (i) {
                     case 0:
                         radius = 100;
                         break;
@@ -108,116 +113,118 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
             }
         });
         AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-        addressedit.setAdapter(new PlacesAutoCompleteAdapter(getApplicationContext(), R.layout.list_item ));
+        addressedit.setAdapter(new PlacesAutoCompleteAdapter(getApplicationContext(), R.layout.list_item));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.add, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.confirm:
-			try {
-				commit();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
-		case R.id.add:
-			try {
-				startAddActivity();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
-		default:
-			break;
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.confirm:
+                try {
+                    commit();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.add:
+                try {
+                    startAddActivity();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                break;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private void startAddActivity() throws ClassNotFoundException, IOException {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Select Action");
-		ListView modeList = new ListView(this);
-		final String[] uiOptions = GeofenceUtils
-				.generateNames(getApplicationContext());
-		final String[] classNames = GeofenceUtils
-				.generateOptions(getApplicationContext());
-		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, android.R.id.text1,
-				uiOptions);
-		OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-			@Override
-			public void onItemClick(android.widget.AdapterView<?> adapterView,
-					View view, int i, long l) {
-				Action a = null;
-				try {
-					a = (Action) Class.forName(classNames[i]).newInstance();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				mActionSelectionDialog.dismiss();
-				a.editDialog(AddGeofences.this).show();
-				actionlist.add(a);
-			}
-		};
+    private void startAddActivity() throws ClassNotFoundException, IOException {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Action");
+        ListView modeList = new ListView(this);
+        final String[] uiOptions = GeofenceUtils
+                .generateNames(getApplicationContext());
+        final String[] classNames = GeofenceUtils
+                .generateOptions(getApplicationContext());
+        ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1,
+                uiOptions);
+        OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+            @Override
+            public void onItemClick(android.widget.AdapterView<?> adapterView,
+                                    View view, int i, long l) {
+                Action a = null;
+                try {
+                    a = (Action) Class.forName(classNames[i]).newInstance();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                mActionSelectionDialog.dismiss();
+                a.editDialog(AddGeofences.this).show();
+                actionlist.add(a);
+            }
+        };
 
-		modeList.setAdapter(modeAdapter);
-		modeList.setOnItemClickListener(mMessageClickedHandler);
-		builder.setView(modeList);
-		mActionSelectionDialog = builder.create();
-		mActionSelectionDialog.show();
+        modeList.setAdapter(modeAdapter);
+        modeList.setOnItemClickListener(mMessageClickedHandler);
+        builder.setView(modeList);
+        mActionSelectionDialog = builder.create();
+        mActionSelectionDialog.show();
 
-	}
+    }
 
-	public static void refreshAddAdapter() {
-		addadapter.notifyDataSetChanged();
-	}
-
-	public void commit() throws IOException {
+    public void commit() throws IOException {
         EditText nameedit = (EditText) findViewById(R.id.NameAdd);
         AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-        if (nameedit.getText().length() == 0){
-            DialogFragment alert =  ErrorThrower.newInstance(
+        if (nameedit.getText().length() == 0) {
+            DialogFragment alert = ErrorThrower.newInstance(
                     "Enter a Name", false);
             alert.show(getSupportFragmentManager(), "adderror");
         }
-		//TODO Add debug for address
+        //TODO Add debug for address
         else {
-			new CommitTask().execute();
-		}
-	}
-	@Override
-	public void onBackPressed() {
+            new CommitTask().execute();
+        }
+    }
 
-		finish();
-	}
+    @Override
+    public void onBackPressed() {
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+        finish();
+    }
 
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    }
 
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -235,75 +242,6 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
 
     }
 
-    public class CommitTask extends AsyncTask<String, String, String> {
-		ProgressDialog dialog;
-
-		public CommitTask() {
-
-		}
-
-		@Override
-		protected String doInBackground(String[] paramArrayOfString) {
-
-            AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-			EditText namedit = (EditText) findViewById(R.id.NameAdd);
-			int startidtemp = 0;
-			Editor editor = mPrefs.edit();
-            List<Address> s = null;
-            try {
-                Geocoder geo = new Geocoder(getBaseContext());
-                s = geo.getFromLocationName(addressedit.getText().toString(), 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-				GeofenceStore geofencestorage = new GeofenceStore(
-						AddGeofences.this);
-				startidtemp = mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
-						-1);
-				SimpleGeofence g = new SimpleGeofence(
-                        startidtemp,
-                        namedit.getText().toString(),
-                        buildAddress(s.get(0)),
-                        s.get(0).getLatitude(),
-                        s.get(0).getLongitude(),
-						radius,
-						Geofence.NEVER_EXPIRE,
-						Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT,
-                        0,
-                        0
-                        );
-				geofencestorage.setGeofence(startidtemp, g);
-				editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
-				GeofenceUtils.save(actionlist, editor, startidtemp);
-			for (Action a : actionlist) {
-				a.commit(getApplicationContext(), startidtemp);
-			}
-			return "";
-		}
-
-		@Override
-		protected void onPostExecute(String str) {
-            Intent stop = new Intent();
-            stop.setAction("com.asdar.geofence.locationstop");
-            sendBroadcast(stop);
-
-            Intent start = new Intent();
-            start.setAction("com.asdar.geofence.locationstart");
-            sendBroadcast(start);
-			this.dialog.dismiss();
-			finish();
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			this.dialog = new ProgressDialog(AddGeofences.this);
-			this.dialog.setMessage("Creating...");
-			this.dialog.show();
-
-		}
-	}
-
     public String buildAddress(Address a) {
         String convert = "";
         for (int i = 0; i < a.getMaxAddressLineIndex(); i++) {
@@ -314,12 +252,82 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
 
     }
 
+    public class CommitTask extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+
+        public CommitTask() {
+
+        }
+
+        @Override
+        protected String doInBackground(String[] paramArrayOfString) {
+
+            AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
+            EditText namedit = (EditText) findViewById(R.id.NameAdd);
+            int startidtemp = 0;
+            Editor editor = mPrefs.edit();
+            List<Address> s = null;
+            try {
+                Geocoder geo = new Geocoder(getBaseContext());
+                s = geo.getFromLocationName(addressedit.getText().toString(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            GeofenceStore geofencestorage = new GeofenceStore(
+                    AddGeofences.this);
+            startidtemp = mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
+                    -1);
+            SimpleGeofence g = new SimpleGeofence(
+                    startidtemp,
+                    namedit.getText().toString(),
+                    buildAddress(s.get(0)),
+                    s.get(0).getLatitude(),
+                    s.get(0).getLongitude(),
+                    radius,
+                    Geofence.NEVER_EXPIRE,
+                    Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT,
+                    0,
+                    0
+            );
+            geofencestorage.setGeofence(startidtemp, g);
+            editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
+            GeofenceUtils.save(actionlist, editor, startidtemp);
+            for (Action a : actionlist) {
+                a.commit(getApplicationContext(), startidtemp);
+            }
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String str) {
+            Intent stop = new Intent();
+            stop.setAction("com.asdar.geofence.locationstop");
+            sendBroadcast(stop);
+
+            Intent start = new Intent();
+            start.setAction("com.asdar.geofence.locationstart");
+            sendBroadcast(start);
+            this.dialog.dismiss();
+            finish();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog = new ProgressDialog(AddGeofences.this);
+            this.dialog.setMessage("Creating...");
+            this.dialog.show();
+
+        }
+    }
+
     private class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
-        private ArrayList<String> resultList;
         private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
         private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
         private static final String OUT_JSON = "/json";
         private static final String API_KEY = "AIzaSyBV15lTOpTwK2Jkv_zxWwfRyU8DsasucAY";
+        private ArrayList<String> resultList;
+
         public PlacesAutoCompleteAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
         }
@@ -354,11 +362,11 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     if (results != null && results.count > 0) {
                         notifyDataSetChanged();
-                    }
-                    else {
+                    } else {
                         notifyDataSetInvalidated();
                     }
-                }};
+                }
+            };
             return filter;
         }
 
@@ -369,7 +377,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
             try {
                 StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
                 sb.append("?input=" + URLEncoder.encode(s, "utf8"));
-                if(currentLoc != null){
+                if (currentLoc != null) {
                     sb.append("&location=" + currentLoc.getLatitude() + "," + currentLoc.getLongitude());
                     sb.append("&radius=" + 500);
                 }
@@ -382,8 +390,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 while ((read = in.read(buff)) != -1) {
                     jsonResults.append(buff, 0, read);
                 }
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 Log.e("com.asdar.geofence", "Error processing Places API URL", e);
                 return resultList;
             } catch (IOException e) {

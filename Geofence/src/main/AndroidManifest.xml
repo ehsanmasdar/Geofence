@@ -50,6 +50,9 @@
         <activity
             android:name="com.asdar.geofence.SettingsActivity"
             android:label="@string/Settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.asdar.geofence.MainActivity" />
         </activity>
         <activity
             android:name="com.asdar.geofence.EditGeofences"
@@ -58,6 +61,9 @@
         <activity
             android:name="com.asdar.geofence.AddGeofences"
             android:label="@string/add_geofence" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.asdar.geofence.MainActivity" />
         </activity>
 
         <meta-data

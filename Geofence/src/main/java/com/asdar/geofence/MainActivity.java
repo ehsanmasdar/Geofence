@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
@@ -53,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private PendingIntent mActivityRecognitionPendingIntent;
     private ActivityRecognitionClient mActivityRecognitionClient;
     private LocationClient mLocationClient;
+    private int lastitemchecked;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             @Override
             public void onItemClick(android.widget.AdapterView<?> adapterView,
                                     View view, int i, long l) {
-                swapFragment(i - 2);
+                swapFragment(i);
             }
         };
 
@@ -131,14 +133,12 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         draweritems = new ArrayList<String>();
         draweritems.add("Home");
         draweritems.add("Map");
-        for (int i = 0; i < currentSimpleGeofences.size(); i++) {
-            draweritems.add(currentSimpleGeofences.get(i).getName());
-        }
+        draweritems.add("Settings");
         draweradapter = new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, draweritems);
         mDrawerList.setAdapter(draweradapter);
         mDrawerList.setOnItemClickListener(drawerItemClick);
-        swapFragment(-2);
+        swapFragment(0);
     }
 
     @Override
@@ -146,50 +146,64 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+    public void addopen() {
+
+        Intent intent = new Intent(getBaseContext(), AddGeofences.class);
+        startActivity(intent);
+    }
 
     public void swapFragment(int i) {
-        if (i == -2) {
-            ListFragment fragment = new HomeFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        switch (i) {
+            case 0:
+                ListFragment fragment = new HomeFragment();
 
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-            // Highlight the selected item, update the title, and close the
-            // drawer
-            mDrawerList.setItemChecked(0, true);
-            mDrawerLayout.closeDrawer(mDrawerList);
-            setTitle("Geofence");
-        } else if (i == -1) {
-            MapFragment fragment = new MapFragment();
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                // Highlight the selected item, update the title, and close the
+                // drawer
+                lastitemchecked = 0;
+                mDrawerLayout.closeDrawer(mDrawerList);
+                setTitle("Geofence");
+                break;
+            case 1:
+                if (!(lastitemchecked == 1))/* Map ID = 1, Pos = 2*/ {
+                    MapFragment mapFragment = new MapFragment();
 
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-            // Highlight the selected item, update the title, and close the
-            // drawer
-            mDrawerList.setItemChecked(1, true);
-            mDrawerLayout.closeDrawer(mDrawerList);
-            setTitle("Geofence");
-        } else {
-            ListFragment fragment = new ActionFragment();
-            Bundle args = new Bundle();
-            args.putInt("id", i);
-            fragment.setArguments(args);
+                    // Insert the fragment by replacing any existing fragment
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.content_frame, mapFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                    // Highlight the selected item, update the title, and close the
+                    // drawer
+                }
+                lastitemchecked = 1;
+                mDrawerLayout.closeDrawer(mDrawerList);
+                setTitle("Geofence");
+                break;
+            case 2:
+                Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+                lastitemchecked = 2;
+                startActivity(intent);
+                break;
+            default:
+                ListFragment actionFragment = new ActionFragment();
+                Bundle args = new Bundle();
+                args.putInt("id", i);
+                actionFragment.setArguments(args);
 
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-            // Highlight the selected item, update the title, and close the
-            // drawer
-            mDrawerList.setItemChecked(i + 2, true);
-            mDrawerLayout.closeDrawer(mDrawerList);
-            Integer a = i;
-            setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a, getApplicationContext()).getName());
-
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, actionFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                // Highlight the selected item, update the title, and close the
+                // drawer
+                lastitemchecked = -1;
+                mDrawerLayout.closeDrawer(mDrawerList);
+                Integer a = i;
+                setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a, getApplicationContext()).getName());
+                break;
         }
+
     }
 
     @Override
@@ -228,12 +242,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         ArrayList<String> simpleGeofenceNames = new ArrayList<String>();
         simpleGeofenceNames.add("Home");
         simpleGeofenceNames.add("Map");
-        for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
-                -1); i++) {
-            simpleGeofenceNames.add(ge.getGeofence(i,
-                    getApplicationContext()).getName());
-        }
-
+        simpleGeofenceNames.add("Settings");
         GeofenceUtils.update(draweradapter, simpleGeofenceNames);
         draweradapter.notifyDataSetChanged();
     }
@@ -262,11 +271,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         startActivity(intent);
     }
 
-    public void addopen(View view) throws IOException {
-
-        Intent intent = new Intent(getBaseContext(), AddGeofences.class);
-        startActivity(intent);
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -285,12 +289,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 startActivity(i);
                 break;
             case R.id.add:
-                Toast.makeText(this, "Add started", Toast.LENGTH_SHORT).show();
-                try {
-                    addopen(new View(getBaseContext()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                addopen();
                 break;
 
             default:
@@ -326,5 +325,4 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     @Override
     public void onDisconnected() {
     }
-
 }
