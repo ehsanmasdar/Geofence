@@ -135,7 +135,7 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 		if (AudioMute) {
 			return "Audio Muted";
 		} else {
-			return "Audio UnMuted";
+			return "Audio Unmuted";
 		}
 	}
 
@@ -144,7 +144,7 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 		if (AudioMute) {
 			return "Audio Muted on entry";
 		} else {
-			return "Audio UnMuted on entry";
+			return "Audio Unmuted on entry";
 		}
 	}
 

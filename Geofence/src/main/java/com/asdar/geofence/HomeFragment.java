@@ -3,37 +3,35 @@ package com.asdar.geofence;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListView;
+import android.view.ViewGroup;
+
+import com.afollestad.cardsui.Card;
+import com.afollestad.cardsui.CardAdapter;
+import com.afollestad.cardsui.CardHeader;
+import com.afollestad.cardsui.CardListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class HomeFragment extends ListFragment {
-	private EventListAdapter eventlistadapter;
+public class HomeFragment extends Fragment {
+
+    private CardListView list;
+    private CardAdapter adapter;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_home, container, false);
+    }
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 	    super.onActivityCreated(savedInstanceState);
-	    SharedPreferences mPrefs = (SharedPreferences) getActivity().getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,
-                Context.MODE_PRIVATE);
-		ArrayList<SimpleGeofence> currentSimpleGeofences = new ArrayList<SimpleGeofence>();
-		GeofenceStore geofencestorage = new GeofenceStore(getActivity().getApplicationContext());
-		for (Integer i = 0; i < mPrefs.getInt("com.asdar.geofence.KEY_STARTID",
-				-1); i++) {
-			
-			currentSimpleGeofences.add(geofencestorage.getGeofence(
-					i, getActivity().getApplicationContext()));
-		}
-		 eventlistadapter = new EventListAdapter(getActivity().getBaseContext(),
-				R.layout.activity_main_listrow, currentSimpleGeofences);
-	    setListAdapter(eventlistadapter);
-	  }
-
-	  @Override
-	  public void onListItemClick(ListView l, View v, int position, long id) {
-		  if(getActivity() instanceof MainActivity){
-			  ((MainActivity) getActivity()).swapFragment(position);
-		  }
+         list = (CardListView)getActivity().findViewById(R.id.cardListView);
+         adapter = new CardAdapter(getActivity()).setAccentColorRes(android.R.color.holo_green_light);
+        regenerateList();
+        list.setAdapter(adapter);
 	  }
 	  public void onResume(){
 		  super.onResume();
@@ -49,8 +47,13 @@ public class HomeFragment extends ListFragment {
 				localcurrentSimpleGeofences.add(ge.getGeofence(i,
 						getActivity().getApplicationContext()));
 			}
-
-			GeofenceUtils.update(eventlistadapter, localcurrentSimpleGeofences);
-		eventlistadapter.notifyDataSetChanged();
+            adapter.clear();
+            for (SimpleGeofence g : localcurrentSimpleGeofences){
+                adapter.add(new CardHeader(g.getAddress()));
+                List<Action> a = GeofenceUtils.generateActionArray(g.getId(),mPrefs,getActivity());
+                for (Action action :a ){
+                    adapter.add(new Card(action.getDescription(), action.listText()));
+                }
+            }
 	}
 }

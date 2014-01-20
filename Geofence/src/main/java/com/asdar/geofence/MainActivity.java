@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -37,7 +36,6 @@ import com.google.android.gms.location.LocationClient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private static final String SHARED_PREFERENCES = "SharedPreferences";
@@ -156,7 +154,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (i) {
             case 0:
-                ListFragment fragment = new HomeFragment();
+                Fragment fragment = new HomeFragment();
 
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
