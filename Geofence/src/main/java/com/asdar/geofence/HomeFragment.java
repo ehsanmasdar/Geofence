@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment {
                 for (Action action :a ){
                     description += (action.listText()  + "\n");
                 }
-                cardView.addCard(new MyPlayCard(title,description,"#FF8C00","#ff0099cc",false,false));
+                cardView.addCard(new MyPlayCard(title,description,"#FF8C00",getResources().getString(R.color.android_primary_text_light),false,false));
             }
             cardView.refresh();
 	}

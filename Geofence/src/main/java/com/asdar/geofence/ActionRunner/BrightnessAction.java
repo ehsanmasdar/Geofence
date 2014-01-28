@@ -136,6 +136,6 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 
 	@Override
 	public String listText() {
-		return "Brightness will changed to " + brightness;
+		return "Brightness will be changed to " + brightness;
 	}
 }

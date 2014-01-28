@@ -271,7 +271,10 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 Geocoder geo = new Geocoder(getBaseContext());
                 s = geo.getFromLocationName(addressedit.getText().toString(), 1);
             } catch (IOException e) {
-                e.printStackTrace();
+
+                DialogFragment alert = ErrorThrower.newInstance(
+                        "The devices` geocoder is disabled. The device must be restarted to add a geofence.", true);
+                alert.show(getSupportFragmentManager(), "geocodererror");
             }
             GeofenceStore geofencestorage = new GeofenceStore(
                     AddGeofences.this);
@@ -314,9 +317,11 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.dialog = new ProgressDialog(AddGeofences.this);
-            this.dialog.setMessage("Creating...");
-            this.dialog.show();
+            if (dialog == null){
+                this.dialog = new ProgressDialog(AddGeofences.this);
+                this.dialog.setMessage("Creating...");
+                 this.dialog.show();
+            }
         }
     }
 

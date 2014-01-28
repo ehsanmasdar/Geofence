@@ -164,4 +164,6 @@
     <color name="holo_blue_bright">#ff00ddff</color>
     <!-- A really bright Holo shade of gray -->
     <color name="holo_gray_bright">#33CCCCCC</color>
+    <color name="android_primary_text_light">#ff000000</color>
+    <color name="android_secondary_text_light">#323232</color>
 </resources>
