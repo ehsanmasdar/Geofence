@@ -18,4 +18,5 @@ public interface Action {
     public String notificationText();
     public String getDescription();
 	public String listText();
+    public int getIcon();
 }

@@ -46,10 +46,12 @@ public class HomeFragment extends Fragment {
                 String title = g.getName();
                 String description = "";
                 List<Action> a = GeofenceUtils.generateActionArray(g.getId(),mPrefs,getActivity());
+                ArrayList<Integer> drawableicons = new ArrayList<Integer>();
                 for (Action action :a ){
                     description += (action.listText()  + "\n");
+                    drawableicons.add(action.getIcon());
                 }
-                cardView.addCard(new MyPlayCard(title,description,"#FF8C00",getResources().getString(R.color.android_primary_text_light),false,false));
+                cardView.addCard(new MyPlayCard(title,description,"#FF8C00",getResources().getString(R.color.android_primary_text_light),false,false,drawableicons,getActivity()));
             }
             cardView.refresh();
 	}

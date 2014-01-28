@@ -138,4 +138,9 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 	public String listText() {
 		return "Brightness will be changed to " + brightness;
 	}
+
+    @Override
+    public int getIcon() {
+        return R.drawable.ic_action_brightness_high;
+    }
 }

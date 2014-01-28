@@ -155,4 +155,7 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 	public String getDescription() {
 		return "Mute Audio";
 	}
+    public int getIcon(){
+        return R.drawable.ic_action_volume_muted;
+    }
 }
