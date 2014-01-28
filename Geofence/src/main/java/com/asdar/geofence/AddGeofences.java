@@ -317,7 +317,6 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
             this.dialog = new ProgressDialog(AddGeofences.this);
             this.dialog.setMessage("Creating...");
             this.dialog.show();
-
         }
     }
 

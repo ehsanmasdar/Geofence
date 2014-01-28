@@ -8,18 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.cardsui.Card;
-import com.afollestad.cardsui.CardAdapter;
-import com.afollestad.cardsui.CardHeader;
-import com.afollestad.cardsui.CardListView;
+import com.fima.cardsui.views.CardUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private CardListView list;
-    private CardAdapter adapter;
+    private CardUI cardView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,10 +24,8 @@ public class HomeFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 	    super.onActivityCreated(savedInstanceState);
-         list = (CardListView)getActivity().findViewById(R.id.cardListView);
-         adapter = new CardAdapter(getActivity()).setAccentColorRes(android.R.color.holo_green_light);
-        regenerateList();
-        list.setAdapter(adapter);
+         cardView = (CardUI) getActivity().findViewById(R.id.cardsview);
+         regenerateList();
 	  }
 	  public void onResume(){
 		  super.onResume();
@@ -47,13 +41,16 @@ public class HomeFragment extends Fragment {
 				localcurrentSimpleGeofences.add(ge.getGeofence(i,
 						getActivity().getApplicationContext()));
 			}
-            adapter.clear();
+            cardView.clearCards();
             for (SimpleGeofence g : localcurrentSimpleGeofences){
-                adapter.add(new CardHeader(g.getAddress()));
+                String title = g.getName();
+                String description = "";
                 List<Action> a = GeofenceUtils.generateActionArray(g.getId(),mPrefs,getActivity());
                 for (Action action :a ){
-                    adapter.add(new Card(action.getDescription(), action.listText()));
+                    description += (action.listText()  + "\n");
                 }
+                cardView.addCard(new MyPlayCard(title,description,"#FF8C00","#ff0099cc",false,false));
             }
+            cardView.refresh();
 	}
 }

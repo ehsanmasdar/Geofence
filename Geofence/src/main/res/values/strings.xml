@@ -42,5 +42,8 @@
     <string name="location_priority_selection">Select a Mode</string>
     <string name="balancedpowersummary">Balaced Power</string>
     <string name="location_priority_summary">App wide location mode. Higher power modes are more accurate and responsive.</string>
-
+    <string name="title">Title</string>
+    <string name="desc">Description</string>
+    <string name="overflow">Menu Overflow</string>
+    <string name="color_stripe">Color Stripe</string>
 </resources>

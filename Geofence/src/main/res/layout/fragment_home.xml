@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <com.afollestad.cardsui.CardListView
-        android:id="@+id/cardListView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+    <com.fima.cardsui.views.CardUI
+        android:id="@+id/cardsview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
