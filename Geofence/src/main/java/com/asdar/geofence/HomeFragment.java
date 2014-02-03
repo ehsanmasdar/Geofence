@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment {
                     description += (action.listText()  + "\n");
                     drawableicons.add(action.getIcon());
                 }
-                cardView.addCard(new MyPlayCard(title,description,"#FF8C00",getResources().getString(R.color.android_primary_text_light),false,false,drawableicons,getActivity()));
+                cardView.addCard(new MyPlayCard(title,description,"#FF8C00","#bebebe",false,false,drawableicons,getActivity()));
             }
             cardView.refresh();
 	}

@@ -43,6 +43,7 @@ public class MyPlayCard extends RecyclableCard {
         LinearLayout titlelayout = (LinearLayout)convertView.findViewById(R.id.titleLayout);
         for (Integer i : icons){
             ImageView img = new ImageView(context);
+         //   img.setBaseline(R.id.title);
             img.setVisibility(View.VISIBLE);
             img.setImageResource(i);
             titlelayout.addView(img);
