@@ -13,6 +13,7 @@ import android.provider.Settings.System;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.asdar.geofence.Action;
@@ -63,7 +64,29 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 
 	@Override
 	public Dialog editDialog(Context context) {
+        LayoutInflater l  = LayoutInflater.from(context);
+        View sliderView = l.inflate(R.layout.sliderdialog,null);
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        SeekBar slider = (SeekBar)findViewById(R.id.slider);
+        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b){
+                    brightness = i;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        builder.setView(slider);
 		builder.setTitle("Set Options");
 		builder.setNegativeButton("Brightness 100",
 				new DialogInterface.OnClickListener() {
