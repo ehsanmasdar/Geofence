@@ -36,6 +36,7 @@ public final class GeofenceUtils {
     public static final String KEY_EXPIRATION_DURATION = "com.asdar.geofence.KEY_EXPIRATION_DURATION";
     public static final String KEY_TRANSITION_TYPE = "com.asdar.geofence.KEY_TRANSITION_TYPE";
     public static final String KEY_AUDIO_MUTE = "com.asdar.geofence.KEY_AUDIO_MUTE";
+    public static final String KEY_WIRELESS = "com.asdar.geofence.KEY_WIRELESS";
     public static final String KEY_NAME = "com.asdar.geofence.KEY_NAME";
     public static final String KEY_ADDRESS = "com.asdar.geofence.KEY_ADDRESS";
     public static final String KEY_ACTIONLIST = "com.asdar.geofence.KEY_ACTIONLIST";
