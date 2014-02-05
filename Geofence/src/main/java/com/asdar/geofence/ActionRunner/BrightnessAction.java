@@ -67,26 +67,8 @@ public class BrightnessAction extends ActionBarActivity implements Action {
         LayoutInflater l  = LayoutInflater.from(context);
         View sliderView = l.inflate(R.layout.sliderdialog,null);
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        SeekBar slider = (SeekBar)findViewById(R.id.slider);
-        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (b){
-                    brightness = i;
-                }
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        builder.setView(slider);
+        builder.setView(sliderView);
 		builder.setTitle("Set Options");
 		builder.setNegativeButton("Brightness 100",
 				new DialogInterface.OnClickListener() {
@@ -107,7 +89,27 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 				});
 		builder.setMessage("Set desired brightness");
 		builder.setCancelable(false);
-		return builder.create();
+		Dialog d = builder.create();
+        SeekBar slider = (SeekBar)d.findViewById(R.id.slider);
+        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b){
+                    brightness = i;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        return d;
 	}
 
 	@Override

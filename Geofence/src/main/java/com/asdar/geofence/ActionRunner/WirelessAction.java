@@ -24,7 +24,9 @@ import com.asdar.geofence.R;
 public class WirelessAction implements Action {
     //TRUE if you WANT it to be enabled, false if you want it to be disabled
     private boolean enabled;
-
+    public WirelessAction() {
+        enabled = true;
+    }
     public WirelessAction(boolean e) {
         enabled = e;
     }
@@ -88,7 +90,7 @@ public class WirelessAction implements Action {
             TextView tt = (TextView) v.findViewById(R.id.toptext);
             TextView bt = (TextView) v.findViewById(R.id.bottomtext);
             if (tt != null) {
-                tt.setText((++position) + ". " + "Audio Mute");
+                tt.setText((++position) + ". " + "Wifi Toggle");
             }
             if (bt != null) {
                 if (enabled) {
@@ -145,6 +147,6 @@ public class WirelessAction implements Action {
 
     @Override
     public int getIcon() {
-        return 0;
+        return R.drawable.ic_action_network_wifi;
     }
 }
