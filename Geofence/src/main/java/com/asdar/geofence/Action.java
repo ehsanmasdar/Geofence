@@ -19,4 +19,5 @@ public interface Action {
     public String getDescription();
 	public String listText();
     public int getIcon();
+    public void onDialogPostCreate(Dialog d);
 }

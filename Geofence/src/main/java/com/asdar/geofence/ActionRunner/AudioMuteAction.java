@@ -1,6 +1,7 @@
 package com.asdar.geofence.ActionRunner;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -157,5 +158,10 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 	}
     public int getIcon(){
         return R.drawable.ic_action_volume_muted;
+    }
+
+    @Override
+    public void onDialogPostCreate(Dialog d) {
+
     }
 }

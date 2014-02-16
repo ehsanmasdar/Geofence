@@ -47,7 +47,7 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 	@Override
 	public void execute(Context context) {
         System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS_MODE, System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-		System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) (brightness/100)*255);
+        System.putInt(context.getContentResolver(), System.SCREEN_BRIGHTNESS,(int) ((brightness/100)*255));
 	}
 
 	@Override
@@ -70,45 +70,25 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 
         builder.setView(sliderView);
 		builder.setTitle("Set Options");
-		builder.setNegativeButton("Brightness 100",
-				new DialogInterface.OnClickListener() {
+		builder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						brightness  = 100;
-						AddGeofences.refreshAddAdapter();
-					}
-				});
-		builder.setPositiveButton("Brightness 0",
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        AddGeofences.refreshAddAdapter();
+                        AddGeofences.cancelLast();
+                    }
+                });
+		builder.setPositiveButton("Confirm",
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						brightness  = 0;
 						AddGeofences.refreshAddAdapter();
 					}
 				});
 		builder.setMessage("Set desired brightness");
 		builder.setCancelable(false);
 		Dialog d = builder.create();
-        SeekBar slider = (SeekBar)d.findViewById(R.id.slider);
-        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (b){
-                    brightness = i;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
         return d;
 	}
 
@@ -167,5 +147,29 @@ public class BrightnessAction extends ActionBarActivity implements Action {
     @Override
     public int getIcon() {
         return R.drawable.ic_action_brightness_high;
+    }
+
+    @Override
+    public void onDialogPostCreate(Dialog d) {
+        brightness = 0;
+        SeekBar slider = (SeekBar)d.findViewById(R.id.slider);
+        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b){
+                    brightness = i;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 }

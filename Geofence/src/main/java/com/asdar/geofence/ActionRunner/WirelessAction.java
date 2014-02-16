@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -148,5 +147,10 @@ public class WirelessAction implements Action {
     @Override
     public int getIcon() {
         return R.drawable.ic_action_network_wifi;
+    }
+
+    @Override
+    public void onDialogPostCreate(Dialog d) {
+
     }
 }

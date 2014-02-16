@@ -1,6 +1,7 @@
 package com.asdar.geofence;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -55,12 +56,18 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     private static ActionAdapter addadapter;
     private SharedPreferences mPrefs;
     private ListView addListView;
-    private ArrayList<Action> actionlist;
+    private static ArrayList<Action> actionlist;
     private AlertDialog mActionSelectionDialog;
     private SimpleGeofence blah;
     private int radius = 100;
     private LocationClient mlocationClient;
     private Location currentLoc;
+
+    public static void cancelLast(){
+        actionlist.remove(actionlist.size()-1);
+        refreshAddAdapter();
+    }
+
 
     public static void refreshAddAdapter() {
         addadapter.notifyDataSetChanged();
@@ -181,8 +188,11 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                     e.printStackTrace();
                 }
                 mActionSelectionDialog.dismiss();
-                a.editDialog(AddGeofences.this).show();
+                Dialog d = a.editDialog(AddGeofences.this);
+                d.show();
+                a.onDialogPostCreate(d);
                 actionlist.add(a);
+
             }
         };
 
