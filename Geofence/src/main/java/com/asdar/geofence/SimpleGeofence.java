@@ -17,8 +17,7 @@ public class SimpleGeofence /*implements Parcelable */ {
     private int mTransitionType;
     private int mResponsiveness;
 	private int mLoiteringDelay;
-
-
+    private boolean inside;
 	/**
      * @param geofenceId The Geofence's request ID
      * @param latitude   Latitude of the Geofence's center.
@@ -42,7 +41,10 @@ public class SimpleGeofence /*implements Parcelable */ {
         this.mAddress = address;
         this.mLoiteringDelay = delay;
         this.mResponsiveness = responsiveness;
+        inside = false;
     }
+    public void setInside(boolean update){inside=update;}
+    public boolean getInside(){return inside;}
 
 	public int getmResponsiveness() {
 		return mResponsiveness;

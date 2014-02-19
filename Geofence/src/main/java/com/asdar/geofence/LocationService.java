@@ -34,6 +34,8 @@ public class LocationService extends Service implements
 	ArrayList<Integer> entered;
     private int priority_preference;
 	private int currentLocationUpdateRequest;
+    private ArrayList<SimpleGeofence> g;
+    private final String TAG = GeofenceUtils.TAG;
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -57,6 +59,9 @@ public class LocationService extends Service implements
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("com.asdar.geofence.ActivityRecieved");
 		registerReceiver(receiver, filter);
+        Log.d(TAG, "Start Called");
+        g = GeofenceUtils.getSimpleGeofences(mPrefs,
+                getBaseContext());
 		return 1;
 	}
 
@@ -114,34 +119,41 @@ public class LocationService extends Service implements
 	}
 
 	public void makeUseOfLocation(Location loc) {
-		Log.d("com.asdar.Geofence", "Lat: " + loc.getLatitude() + " Long: "
+		Log.d(TAG, "Lat: " + loc.getLatitude() + " Long: "
 				+ loc.getLongitude());
-		ArrayList<SimpleGeofence> g = GeofenceUtils.getSimpleGeofences(mPrefs,
-				getBaseContext());
+        if (GeofenceUtils.getSimpleGeofences(mPrefs,
+                getBaseContext()).size() != g.size()){
+            Log.d(TAG, "Geofence added or removed!");
+        }
 		for (SimpleGeofence a : g) {
-			float radius = a.getRadius() / 1000;
-			Log.d("com.asdar.geofence",
+            float radius = a.getRadius() / 1000;
+			Log.d(TAG,
 					"Radius: "
 							+ radius
 							+ " Distance From Current: "
 							+ distance(loc.getLatitude(), loc.getLongitude(),
 									a.getLatitude(), a.getLongitude()));
 			if (radius >= distance(loc.getLatitude(), loc.getLongitude(),
-					a.getLatitude(), a.getLongitude())) {
+					a.getLatitude(), a.getLongitude()) && !a.getInside()) {
+
 				Intent intent = new Intent(this,
 						ReceiveTransitionsIntentService.class);
 				intent.putExtra("id", a.getId());
 				intent.putExtra("transitionType", 1);
+                a.setInside(true);
 				startService(intent);
+                Log.d(TAG, "Entered Geofence");
 			}
 			if (radius <= distance(loc.getLatitude(), loc.getLongitude(),
-					a.getLatitude(), a.getLongitude())) {
+					a.getLatitude(), a.getLongitude())&& a.getInside()) {
 				Intent intent = new Intent(this,
 						ReceiveTransitionsIntentService.class);
 				intent.putExtra("id", a.getId());
 				intent.putExtra("transitionType", 2);
+                a.setInside(false);
 				startService(intent);
-			}
+                Log.d(TAG, "Exited Geofence");
+            }
 		}
 	}
 

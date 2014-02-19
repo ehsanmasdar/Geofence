@@ -30,6 +30,7 @@ public final class GeofenceUtils {
     public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     public static final CharSequence GEOFENCE_ID_DELIMITER = ",";
     public static final int ActionNum = 1;
+    public static final String TAG = "com.asdar.geofence";
     public static final String KEY_LATITUDE = "com.asdar.geofence.KEY_LATITUDE";
     public static final String KEY_LONGITUDE = "com.asdar.geofence.KEY_LONGITUDE";
     public static final String KEY_RADIUS = "com.asdar.geofence.KEY_RADIUS";
