@@ -207,12 +207,22 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     public void commit() throws IOException {
         EditText nameedit = (EditText) findViewById(R.id.NameAdd);
         AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
+        Geocoder geo = new Geocoder(this);
         if (nameedit.getText().length() == 0) {
             DialogFragment alert = ErrorThrower.newInstance(
                     "Enter a Name", false);
             alert.show(getSupportFragmentManager(), "adderror");
         }
-        //TODO Add debug for address
+        else if (addressedit.getText().toString().length() < 1){
+            DialogFragment alert = ErrorThrower.newInstance(
+                    "Enter An Address", false);
+            alert.show(getSupportFragmentManager(), "adderror");
+        }
+        else if ((geo.getFromLocationName(addressedit.getText().toString(), 1) == null) || (geo.getFromLocationName(addressedit.getText().toString(), 1).size() < 1) ){
+            DialogFragment alert = ErrorThrower.newInstance(
+                    "Address not found", false);
+            alert.show(getSupportFragmentManager(), "adderror");
+        }
         else {
             new CommitTask().execute();
         }
