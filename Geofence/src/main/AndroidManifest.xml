@@ -48,7 +48,14 @@
         </activity>
         <activity
             android:name=".ActionRunner.AudioMuteAction"
-            android:label="test" />
+            android:label="audio" />
+
+        <activity
+            android:name=".ActionRunner.WirelessAction"
+            android:label="wireless" />
+        <activity
+            android:name=".ActionRunner.BrightnessAction"
+            android:label="brightness" />
         <activity
             android:name="com.asdar.geofence.SettingsActivity"
             android:label="@string/Settings" >

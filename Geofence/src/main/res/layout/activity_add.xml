@@ -36,9 +36,15 @@
     <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/addListView"
+            android:id="@+id/addListViewEnter"
             android:layout_below="@+id/RadiusAdd"
             android:layout_alignParentLeft="true"
             android:layout_marginTop="30dp"/>
-
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addListViewExit"
+        android:layout_below="@+id/addListViewEnter"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="30dp"/>
 </RelativeLayout>

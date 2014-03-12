@@ -51,13 +51,21 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 	}
 
 	@Override
-	public void commit(Context context, int id) {
+	public void commit(Context context, int id, boolean exit) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = mPrefs.edit();
+        String key;
+        if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_BRIGHTNESS) + ".EXIT";
+        }
+        else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_BRIGHTNESS) + ".ENTER";
+        }
 		// Write the Geofence values to SharedPreferences
-		editor.putFloat(GeofenceStore.getGeofenceFieldKey(id,
-                GeofenceUtils.KEY_BRIGHTNESS), brightness);
+		editor.putFloat(key, brightness);
 		editor.commit();
 
 	}
@@ -114,14 +122,21 @@ public class BrightnessAction extends ActionBarActivity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, int id)
+	public Action generateSavedState(Context context, int id, boolean exit)
 			 {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		float b = 0;
-
-		b = mPrefs.getFloat(GeofenceStore.getGeofenceFieldKey(id,
-				GeofenceUtils.KEY_BRIGHTNESS), -1);
+        String key;
+         if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+            GeofenceUtils.KEY_BRIGHTNESS) + ".EXIT";
+         }
+         else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+            GeofenceUtils.KEY_BRIGHTNESS) + ".ENTER";
+         }
+		b = mPrefs.getFloat(key, -1);
 
 		return new BrightnessAction(b);
 	}

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -20,7 +21,7 @@ import com.asdar.geofence.R;
 /**
  * Created by s2094505 on 2/3/14.
  */
-public class WirelessAction implements Action {
+public class WirelessAction extends ActionBarActivity implements Action {
     //TRUE if you WANT it to be enabled, false if you want it to be disabled
     private boolean enabled;
     public WirelessAction() {
@@ -42,13 +43,21 @@ public class WirelessAction implements Action {
     }
 
     @Override
-    public void commit(Context context, int id) {
+    public void commit(Context context, int id, boolean exit) {
         SharedPreferences mPrefs = (SharedPreferences) context.getSharedPreferences(
                 GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mPrefs.edit();
+        String key;
+        if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_WIRELESS) + ".EXIT";
+        }
+        else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_WIRELESS) + ".ENTER";
+        }
         // Write the Geofence values to SharedPreferences
-        editor.putBoolean(GeofenceStore.getGeofenceFieldKey(id,
-                GeofenceUtils.KEY_WIRELESS), enabled);
+        editor.putBoolean(key, enabled);
         editor.commit();
     }
 
@@ -104,12 +113,20 @@ public class WirelessAction implements Action {
     }
 
     @Override
-    public Action generateSavedState(Context context, int id) {
+    public Action generateSavedState(Context context, int id, boolean exit) {
         SharedPreferences mPrefs = (SharedPreferences) context.getSharedPreferences(
                 GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         boolean e = false;
-        e = mPrefs.getBoolean(GeofenceStore.getGeofenceFieldKey(id,
-                GeofenceUtils.KEY_WIRELESS), false);
+        String key;
+        if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_WIRELESS) + ".EXIT";
+        }
+        else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_WIRELESS) + ".ENTER";
+        }
+        e = mPrefs.getBoolean(key, false);
 
         return new WirelessAction(e);
     }

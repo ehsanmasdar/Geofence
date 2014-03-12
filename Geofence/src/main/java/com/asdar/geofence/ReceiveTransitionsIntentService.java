@@ -41,7 +41,19 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 int triggerID = intent.getIntExtra("id", 0);
                 String notificationbuilder = "";
                 if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER || transitionType == Geofence.GEOFENCE_TRANSITION_DWELL){
-                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerID, mPrefs, getApplicationContext());
+                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerID, mPrefs, getApplicationContext(), GeofenceUtils.KEY_ACTIONLIST_ENTER);
+
+                    for (Action a : locallist) {
+                        notificationbuilder = (a.notificationText()) + ", ";
+
+                        if (notificationbuilder.length() >0){
+                            notificationbuilder = notificationbuilder.substring(0,notificationbuilder.length()-2);
+                        }
+                        a.execute(getApplicationContext());
+                    }
+                }
+                if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT){
+                    List<Action> locallist = GeofenceUtils.generateActionArray(triggerID, mPrefs, getApplicationContext(), GeofenceUtils.KEY_ACTIONLIST_EXIT);
 
                     for (Action a : locallist) {
                         notificationbuilder = (a.notificationText()) + ", ";
@@ -83,7 +95,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void sendNotification(int triggerID, String contentext, boolean exit) throws IOException {
-        if (!exit) {
         	Log.d("com.asdar.geofence", "adding notification");
             // Create an explicit content Intent that starts the main Activity
             Intent notificationIntent = new Intent(getApplicationContext(),
@@ -97,24 +108,26 @@ public class ReceiveTransitionsIntentService extends IntentService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(
                     this);
 
-           
+            String transition = "";
+            if(exit){
 
+                    transition = "Exited";
+            }
+            else{
+                    transition = "Entered";
+            }
             // Set the notification contents
             builder.setSmallIcon(R.drawable./* TEMP */ic_launcher)
-                  .setContentTitle("Entered " + buildName(triggerID))
-                    .setContentText(contentext)
-                    .setContentIntent(notificationPendingIntent)
-                    .setOngoing(true);
+                  .setContentTitle(transition + buildName(triggerID))
+                  .setContentText(contentext)
+                  .setContentIntent(notificationPendingIntent)
+                  .setPriority(-2);
 
             // Get an instance of the Notification manager
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             // Issue the notification
             mNotificationManager.notify(102232+triggerID, builder.build());
-        } else {
-            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.cancel(102232+triggerID);
-        }
 
     }
 

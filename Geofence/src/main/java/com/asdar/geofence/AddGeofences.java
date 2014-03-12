@@ -29,6 +29,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -62,6 +63,9 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     private int radius = 100;
     private LocationClient mlocationClient;
     private Location currentLoc;
+    private ListView exitListView;
+    private ArrayList<Action> exitActionList;
+    private ActionAdapter exitAdapter;
 
     public static void cancelLast(){
         actionlist.remove(actionlist.size()-1);
@@ -82,11 +86,28 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         setContentView(R.layout.activity_add);
+        //Enter
         actionlist = new ArrayList<Action>();
         addadapter = new ActionAdapter(getBaseContext(),
                 R.layout.activity_add_actionlist, actionlist);
-        addListView = (ListView) findViewById(R.id.addListView);
+        addListView = (ListView) findViewById(R.id.addListViewEnter);
         addListView.setAdapter(addadapter);
+        TextView enter = new TextView(this);
+        enter.setText("Enter Actions:");
+        enter.setTextSize(15);
+
+        addListView.addHeaderView(enter);
+        //Exit
+        exitActionList = new ArrayList<Action>();
+        exitAdapter = new ActionAdapter(getBaseContext(),
+                R.layout.activity_add_actionlist, exitActionList);
+        exitListView = (ListView) findViewById(R.id.addListViewExit);
+        exitListView.setAdapter(exitAdapter);
+        TextView exit = new TextView(this);
+        exit.setText("Exit Actions:");
+        exit.setTextSize(15);
+        exitListView.addHeaderView(enter);
+        //Other content setup
         Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.distances_array_metric, android.R.layout.simple_spinner_item);
@@ -191,7 +212,14 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 Dialog d = a.editDialog(AddGeofences.this);
                 d.show();
                 a.onDialogPostCreate(d);
-                actionlist.add(a);
+                if ((actionlist.size() + exitActionList.size())% 2 == 0){
+                    actionlist.add(a);
+                    addadapter.notifyDataSetChanged();
+                }
+                else{
+                    exitActionList.add(a);
+                    exitAdapter.notifyDataSetChanged();
+                }
 
             }
         };
@@ -314,9 +342,15 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
             );
             geofencestorage.setGeofence(startidtemp, g);
             editor.putInt("com.asdar.geofence.KEY_STARTID", startidtemp + 1);
-            GeofenceUtils.save(actionlist, editor, startidtemp);
+            //Save enter
+            GeofenceUtils.saveEnter(actionlist, editor, startidtemp);
             for (Action a : actionlist) {
-                a.commit(getApplicationContext(), startidtemp);
+                a.commit(getApplicationContext(), startidtemp, false);
+            }
+            //Save exit
+            GeofenceUtils.saveExit(exitActionList, editor, startidtemp);
+            for (Action a: exitActionList){
+                a.commit(getApplicationContext(), startidtemp, true);
             }
             return "";
         }

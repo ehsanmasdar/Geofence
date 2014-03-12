@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
     }
 }
 apply plugin: 'android'
@@ -38,7 +38,7 @@ android {
 
 dependencies {
     compile 'com.fima.cardsui:CardsUILib:1.0-SNAPSHOT@aar'
-    compile 'com.android.support:support-v4:19.0.0'
-    compile 'com.android.support:appcompat-v7:19.0.0'
-    compile 'com.google.android.gms:play-services:4.0.30'
+    compile 'com.android.support:support-v4:19.0.1'
+    compile 'com.android.support:appcompat-v7:19.0.1'
+    compile 'com.google.android.gms:play-services:4.1.32'
 }

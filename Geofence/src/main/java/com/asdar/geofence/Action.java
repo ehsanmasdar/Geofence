@@ -10,11 +10,11 @@ public interface Action {
 
     public String toString();
 
-    public void commit(Context context, int id);
+    public void commit(Context context, int id, boolean exit);
     public Dialog editDialog(Context context);
 
     public View addView(Context context, int position);
-    public Action generateSavedState(Context context, int id);
+    public Action generateSavedState(Context context, int id, boolean exit);
     public String notificationText();
     public String getDescription();
 	public String listText();

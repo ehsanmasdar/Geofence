@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment {
             for (SimpleGeofence g : localcurrentSimpleGeofences){
                 String title = g.getName();
                 String description = "";
-                List<Action> a = GeofenceUtils.generateActionArray(g.getId(),mPrefs,getActivity());
+                List<Action> a = GeofenceUtils.generateActionArray(g.getId(),mPrefs,getActivity(),GeofenceUtils.KEY_ACTIONLIST_ENTER);
                 ArrayList<Integer> drawableicons = new ArrayList<Integer>();
                 for (Action action :a ){
                     description += (action.listText()  + "\n");

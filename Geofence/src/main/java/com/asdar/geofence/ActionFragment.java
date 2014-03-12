@@ -16,7 +16,7 @@ public class ActionFragment extends ListFragment {
 	    Integer id = getArguments().getInt("id");
 	    SharedPreferences mPrefs = (SharedPreferences) getActivity().getSharedPreferences(GeofenceUtils.SHARED_PREFERENCES,
                 Context.MODE_PRIVATE);
-    	List<Action> actionlist = GeofenceUtils.generateActionArray(id, mPrefs,getActivity().getApplicationContext());
+    	List<Action> actionlist = GeofenceUtils.generateActionArray(id, mPrefs,getActivity().getApplicationContext(),GeofenceUtils.KEY_ACTIONLIST_ENTER);
     	
     	DrawerDisplayAdapter adapter = new DrawerDisplayAdapter(getActivity().getApplicationContext(),
     			R.layout.activity_main_listrow, (ArrayList)actionlist);

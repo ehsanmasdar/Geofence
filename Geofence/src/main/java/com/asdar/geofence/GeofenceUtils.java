@@ -40,7 +40,8 @@ public final class GeofenceUtils {
     public static final String KEY_WIRELESS = "com.asdar.geofence.KEY_WIRELESS";
     public static final String KEY_NAME = "com.asdar.geofence.KEY_NAME";
     public static final String KEY_ADDRESS = "com.asdar.geofence.KEY_ADDRESS";
-    public static final String KEY_ACTIONLIST = "com.asdar.geofence.KEY_ACTIONLIST";
+    public static final String KEY_ACTIONLIST_ENTER = "com.asdar.geofence.KEY_ACTIONLIST_ENTER";
+    public static final String KEY_ACTIONLIST_EXIT = "com.asdar.geofence.KEY_ACTIONLIST_EXIT";
 
     public static final String KEY_DELAY = "com.asdar.geofence.KEY_DELAY";
     public static final String KEY_RESPONSIVENESS = "com.asdar.geofence.KEY_RESPONSIVENESS";
@@ -77,7 +78,7 @@ public final class GeofenceUtils {
         arrayAdapter.add(a);
     }
 
-    public static void save(ArrayList<Action> actionlist, Editor e,
+    public static void saveEnter(ArrayList<Action> actionlist, Editor e,
                             int geofenceid) {
         HashSet<String> list = new HashSet<String>();
         for (Action a : actionlist) {
@@ -87,41 +88,63 @@ public final class GeofenceUtils {
         }
         if (Build.VERSION.SDK_INT >= 11){
             e.putStringSet(
-                    GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST),
+                    GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST_ENTER),
                     list);
             e.commit();
         }
         else {
-            setLegacyArrayList(list,e,geofenceid);
+            setLegacyArrayList(list,e,geofenceid,KEY_ACTIONLIST_ENTER);
         }
 
     }
 
+    public static void saveExit(ArrayList<Action> actionlist, Editor e,
+                                 int geofenceid) {
+        HashSet<String> list = new HashSet<String>();
+        for (Action a : actionlist) {
+            String str = a.toString();
+            int c = str.indexOf('@');
+            list.add(str.substring(0, c));
+        }
+        if (Build.VERSION.SDK_INT >= 11){
+            e.putStringSet(
+                    GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST_EXIT),
+                    list);
+            e.commit();
+        }
+        else {
+            setLegacyArrayList(list,e,geofenceid,KEY_ACTIONLIST_EXIT);
+        }
 
+    }
 
     public static List<Action> generateActionArray(int id,
-                                                   SharedPreferences mPrefs, Context c) {
+                                                   SharedPreferences mPrefs, Context c,String key) {
         ArrayList<Action> list;
+        boolean exit = false;
+        if (key == KEY_ACTIONLIST_EXIT){
+            exit = true;
+        }
         if (android.os.Build.VERSION.SDK_INT >= 11) {
             list = new ArrayList<Action>();
             Set<String> local = mPrefs.getStringSet(
-                    GeofenceStore.getGeofenceFieldKey(id, KEY_ACTIONLIST), null);
+                    GeofenceStore.getGeofenceFieldKey(id,key), null);
             for (String str : local) {
-                list.add(queryString(str, id, c));
+                list.add(queryString(str, id, c,exit));
             }
         }
         else {
            list = new ArrayList<Action>();
-            ArrayList<String> local = getLegacyArrayList(mPrefs,id,c);
+            ArrayList<String> local = getLegacyArrayList(mPrefs,id,c,key);
             for (String str : local) {
-                list.add(queryString(str, id, c));
+                list.add(queryString(str, id, c,exit));
             }
         }
         return list;
     }
 
-    private static ArrayList<String>  getLegacyArrayList(SharedPreferences mPrefs, int id, Context c) {
-        String local = mPrefs.getString(GeofenceStore.getGeofenceFieldKey(id,KEY_ACTIONLIST),"[]");
+    private static ArrayList<String>  getLegacyArrayList(SharedPreferences mPrefs, int id, Context c, String key) {
+        String local = mPrefs.getString(GeofenceStore.getGeofenceFieldKey(id,key),"[]");
         ArrayList<String> list = new ArrayList<String>();
         if (local.equals("[]")){
             return new ArrayList<String>();
@@ -156,20 +179,20 @@ public final class GeofenceUtils {
         }
         return loc;
     }
-    private static void setLegacyArrayList(HashSet<String> list, Editor e, int geofenceid) {
+    private static void setLegacyArrayList(HashSet<String> list, Editor e, int geofenceid,String key) {
         String s = Arrays.toString(list.toArray());
         Log.d("com.asdar.geofence", s);
-        e.putString( GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST),
+        e.putString( GeofenceStore.getGeofenceFieldKey(geofenceid, key),
                 s);
         e.commit();
 
     }
 
 
-    public static Action queryString(String str, int id, Context context) {
+    public static Action queryString(String str, int id, Context context, boolean exit) {
         try {
             Action a = (Action) Class.forName(str).newInstance();
-            return a.generateSavedState(context, id);
+            return a.generateSavedState(context, id, exit);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -190,7 +213,7 @@ public final class GeofenceUtils {
      * Action classes in the current package
      */
     public static String[] generateOptions(Context context)
-            throws ClassNotFoundException, IOException {
+            throws IOException {
         ArrayList<String> arr = new ArrayList<String>();
         Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence.actionrunner");
         Iterator i = set.iterator();
@@ -209,7 +232,7 @@ public final class GeofenceUtils {
      * @return A Set of all the classes in the current package
      */
     public static Set<Class<?>> getClasspathClasses(Context context,
-                                                    String packageName) throws ClassNotFoundException, IOException {
+                                                    String packageName) throws IOException {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         DexFile dex = new DexFile(context.getApplicationInfo().sourceDir);
         ClassLoader classLoader = Thread.currentThread()
@@ -219,7 +242,11 @@ public final class GeofenceUtils {
             String entry = entries.nextElement();
             if (entry.toLowerCase().startsWith(packageName.toLowerCase())
                     && !entry.contains("$")){
-                classes.add(classLoader.loadClass(entry));
+                try {
+                    classes.add(Class.forName(entry));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return classes;

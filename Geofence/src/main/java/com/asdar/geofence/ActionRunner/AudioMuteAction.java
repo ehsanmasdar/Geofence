@@ -54,15 +54,21 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 	}
 
 	@Override
-	public void commit(Context context, int id) {
+	public void commit(Context context, int id, boolean exit) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		APP_KEY = "a6kopt2el9go62x";
-		APP_SECRET = "r5nhykcj43f0rbj";
 		Editor editor = mPrefs.edit();
+        String key;
+        if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_AUDIO_MUTE) + ".EXIT";
+        }
+        else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_AUDIO_MUTE) + ".ENTER";
+        }
 		// Write the Geofence values to SharedPreferences
-		editor.putBoolean(GeofenceStore.getGeofenceFieldKey(id,
-                GeofenceUtils.KEY_AUDIO_MUTE), AudioMute);
+		editor.putBoolean(key, AudioMute);
 		editor.commit();
 
 	}
@@ -120,13 +126,20 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 	}
 
 	@Override
-	public Action generateSavedState(Context context, int id) {
+	public Action generateSavedState(Context context, int id, boolean exit) {
 		mPrefs = (SharedPreferences) context.getSharedPreferences(
 				GeofenceUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		Boolean b = false;
-
-		b = mPrefs.getBoolean(GeofenceStore.getGeofenceFieldKey(id,
-				GeofenceUtils.KEY_AUDIO_MUTE), false);
+        String key;
+        if (exit){
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_AUDIO_MUTE) + ".EXIT";
+        }
+        else {
+            key = GeofenceStore.getGeofenceFieldKey(id,
+                    GeofenceUtils.KEY_AUDIO_MUTE) + ".ENTER";
+        }
+		b = mPrefs.getBoolean(key, false);
 
 		return new AudioMuteAction(b);
 	}
