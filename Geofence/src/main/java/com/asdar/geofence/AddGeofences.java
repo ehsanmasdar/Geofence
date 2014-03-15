@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -106,7 +107,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         TextView exit = new TextView(this);
         exit.setText("Exit Actions:");
         exit.setTextSize(15);
-        exitListView.addHeaderView(enter);
+        exitListView.addHeaderView(exit);
         //Other content setup
         Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -169,7 +170,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 break;
             case R.id.add:
                 try {
-                    startAddActivity();
+                    addActivity();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -183,7 +184,8 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         return true;
     }
 
-    private void startAddActivity() throws ClassNotFoundException, IOException {
+
+    private void addActivity() throws ClassNotFoundException, IOException {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Action");
         ListView modeList = new ListView(this);
@@ -210,17 +212,21 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 }
                 mActionSelectionDialog.dismiss();
                 Dialog d = a.editDialog(AddGeofences.this);
+                d.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        addadapter.notifyDataSetChanged();
+                        exitAdapter.notifyDataSetChanged();
+                    }
+                });
                 d.show();
                 a.onDialogPostCreate(d);
-                if ((actionlist.size() + exitActionList.size())% 2 == 0){
+               if ((actionlist.size() + exitActionList.size())% 2 == 0){
                     actionlist.add(a);
-                    addadapter.notifyDataSetChanged();
-                }
-                else{
+               }
+               else{
                     exitActionList.add(a);
-                    exitAdapter.notifyDataSetChanged();
                 }
-
             }
         };
 
@@ -229,7 +235,6 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         builder.setView(modeList);
         mActionSelectionDialog = builder.create();
         mActionSelectionDialog.show();
-
     }
 
     public void commit() throws IOException {

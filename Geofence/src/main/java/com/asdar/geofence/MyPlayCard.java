@@ -38,8 +38,6 @@ public class MyPlayCard extends RecyclableCard {
                 .parseColor(titleColor));
         ((TextView) convertView.findViewById(R.id.description))
                 .setText(description);
-        ((ImageView) convertView.findViewById(R.id.stripe))
-                .setBackgroundColor(Color.parseColor(color));
         LinearLayout titlelayout = (LinearLayout)convertView.findViewById(R.id.titleLayout);
         for (Integer i : icons){
             ImageView img = new ImageView(context);
