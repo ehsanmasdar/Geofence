@@ -7,27 +7,20 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.asdar.geofence.ActionRunner.AudioMuteAction;
+import com.asdar.geofence.ActionRunner.BrightnessAction;
+import com.asdar.geofence.ActionRunner.WirelessAction;
+
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import dalvik.system.DexFile;
-
 public final class GeofenceUtils {
-    private static ArrayAdapter arrayAdapter;
-    private static ArrayList<Object> listOfObject;
-
-    public enum REQUEST_TYPE {
-        ADD, ADDONE, REMOVE
-    }
-
-    public static final int ADD_GEOFENCE_REQUEST = 10;
-    public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     public static final CharSequence GEOFENCE_ID_DELIMITER = ",";
     public static final int ActionNum = 1;
     public static final String TAG = "com.asdar.geofence";
@@ -79,26 +72,6 @@ public final class GeofenceUtils {
     }
 
     public static void saveEnter(ArrayList<Action> actionlist, Editor e,
-                            int geofenceid) {
-        HashSet<String> list = new HashSet<String>();
-        for (Action a : actionlist) {
-            String str = a.toString();
-            int c = str.indexOf('@');
-            list.add(str.substring(0, c));
-        }
-        if (Build.VERSION.SDK_INT >= 11){
-            e.putStringSet(
-                    GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST_ENTER),
-                    list);
-            e.commit();
-        }
-        else {
-            setLegacyArrayList(list,e,geofenceid,KEY_ACTIONLIST_ENTER);
-        }
-
-    }
-
-    public static void saveExit(ArrayList<Action> actionlist, Editor e,
                                  int geofenceid) {
         HashSet<String> list = new HashSet<String>();
         for (Action a : actionlist) {
@@ -106,72 +79,88 @@ public final class GeofenceUtils {
             int c = str.indexOf('@');
             list.add(str.substring(0, c));
         }
-        if (Build.VERSION.SDK_INT >= 11){
+        if (Build.VERSION.SDK_INT >= 11) {
+            e.putStringSet(
+                    GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST_ENTER),
+                    list);
+            e.commit();
+        } else {
+            setLegacyArrayList(list, e, geofenceid, KEY_ACTIONLIST_ENTER);
+        }
+
+    }
+
+    public static void saveExit(ArrayList<Action> actionlist, Editor e,
+                                int geofenceid) {
+        HashSet<String> list = new HashSet<String>();
+        for (Action a : actionlist) {
+            String str = a.toString();
+            int c = str.indexOf('@');
+            list.add(str.substring(0, c));
+        }
+        if (Build.VERSION.SDK_INT >= 11) {
             e.putStringSet(
                     GeofenceStore.getGeofenceFieldKey(geofenceid, KEY_ACTIONLIST_EXIT),
                     list);
             e.commit();
-        }
-        else {
-            setLegacyArrayList(list,e,geofenceid,KEY_ACTIONLIST_EXIT);
+        } else {
+            setLegacyArrayList(list, e, geofenceid, KEY_ACTIONLIST_EXIT);
         }
 
     }
 
     public static List<Action> generateActionArray(int id,
-                                                   SharedPreferences mPrefs, Context c,String key) {
+                                                   SharedPreferences mPrefs, Context c, String key) {
         ArrayList<Action> list;
         boolean exit = false;
-        if (key == KEY_ACTIONLIST_EXIT){
+        if (key == KEY_ACTIONLIST_EXIT) {
             exit = true;
         }
         if (android.os.Build.VERSION.SDK_INT >= 11) {
             list = new ArrayList<Action>();
             Set<String> local = mPrefs.getStringSet(
-                    GeofenceStore.getGeofenceFieldKey(id,key), null);
+                    GeofenceStore.getGeofenceFieldKey(id, key), null);
             for (String str : local) {
-                list.add(queryString(str, id, c,exit));
+                list.add(queryString(str, id, c, exit));
             }
-        }
-        else {
-           list = new ArrayList<Action>();
-            ArrayList<String> local = getLegacyArrayList(mPrefs,id,c,key);
+        } else {
+            list = new ArrayList<Action>();
+            ArrayList<String> local = getLegacyArrayList(mPrefs, id, c, key);
             for (String str : local) {
-                list.add(queryString(str, id, c,exit));
+                list.add(queryString(str, id, c, exit));
             }
         }
         return list;
     }
 
-    private static ArrayList<String>  getLegacyArrayList(SharedPreferences mPrefs, int id, Context c, String key) {
-        String local = mPrefs.getString(GeofenceStore.getGeofenceFieldKey(id,key),"[]");
+    private static ArrayList<String> getLegacyArrayList(SharedPreferences mPrefs, int id, Context c, String key) {
+        String local = mPrefs.getString(GeofenceStore.getGeofenceFieldKey(id, key), "[]");
         ArrayList<String> list = new ArrayList<String>();
-        if (local.equals("[]")){
+        if (local.equals("[]")) {
             return new ArrayList<String>();
-        }
-        else{
-            local = local.replace("]","" );
-            local = local.replace("[","");
-            local = local.replace(" ","" );
+        } else {
+            local = local.replace("]", "");
+            local = local.replace("[", "");
+            local = local.replace(" ", "");
             local = local.trim();
-            ArrayList<Integer> commas = countOccurrences(local,',');
+            ArrayList<Integer> commas = countOccurrences(local, ',');
             int prev = -1;
-            for (int i = 0; i < commas.size()+1; i++){
-                if (i == commas.size()){
-                    list.add(local.substring(prev+1,local.length()));
+            for (int i = 0; i < commas.size() + 1; i++) {
+                if (i == commas.size()) {
+                    list.add(local.substring(prev + 1, local.length()));
                     prev = 0;
-                }
-                else{
-                    list.add(local.substring(prev+1,commas.get(i)));
+                } else {
+                    list.add(local.substring(prev + 1, commas.get(i)));
                     prev = commas.get(i);
                 }
             }
         }
         return list;
     }
+
     public static ArrayList<Integer> countOccurrences(String haystack, char needle) {
         ArrayList<Integer> loc = new ArrayList<Integer>();
-        for (int i = 0; i<haystack.toCharArray().length; i++) {
+        for (int i = 0; i < haystack.toCharArray().length; i++) {
             char c = haystack.toCharArray()[i];
             if (c == needle) {
                 loc.add(i);
@@ -179,10 +168,11 @@ public final class GeofenceUtils {
         }
         return loc;
     }
-    private static void setLegacyArrayList(HashSet<String> list, Editor e, int geofenceid,String key) {
+
+    private static void setLegacyArrayList(HashSet<String> list, Editor e, int geofenceid, String key) {
         String s = Arrays.toString(list.toArray());
         Log.d("com.asdar.geofence", s);
-        e.putString( GeofenceStore.getGeofenceFieldKey(geofenceid, key),
+        e.putString(GeofenceStore.getGeofenceFieldKey(geofenceid, key),
                 s);
         e.commit();
 
@@ -215,11 +205,9 @@ public final class GeofenceUtils {
     public static String[] generateOptions(Context context)
             throws IOException {
         ArrayList<String> arr = new ArrayList<String>();
-        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence.actionrunner");
-        Iterator i = set.iterator();
-        while (i.hasNext()) {
-            Class<?> c = (Class<?>) i.next();
-                arr.add(c.getName());
+        ArrayList<Action> set = getActionClasses(context);
+        for (Action a : set){
+           arr.add(a.getClass().getName());
         }
         return arr.toArray(new String[0]);
     }
@@ -227,28 +215,14 @@ public final class GeofenceUtils {
     /**
      * Returns all Classes in the current package
      *
-     * @param context     The application context
-     * @param packageName The package name
-     * @return A Set of all the classes in the current package
+     * @param context The application context
+     * @return A Set of all the Action classes in the current package
      */
-    public static Set<Class<?>> getClasspathClasses(Context context,
-                                                    String packageName) throws IOException {
-        Set<Class<?>> classes = new HashSet<Class<?>>();
-        DexFile dex = new DexFile(context.getApplicationInfo().sourceDir);
-        ClassLoader classLoader = Thread.currentThread()
-                .getContextClassLoader();
-        Enumeration<String> entries = dex.entries();
-        while (entries.hasMoreElements()) {
-            String entry = entries.nextElement();
-            if (entry.toLowerCase().startsWith(packageName.toLowerCase())
-                    && !entry.contains("$")){
-                try {
-                    classes.add(Class.forName(entry));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public static ArrayList<Action> getActionClasses(Context context) throws IOException {
+        ArrayList<Action> classes = new ArrayList<Action>();
+        classes.add(new AudioMuteAction());
+        classes.add(new BrightnessAction());
+        classes.add(new WirelessAction());
         return classes;
     }
 
@@ -263,18 +237,10 @@ public final class GeofenceUtils {
     public static String[] generateNames(Context context)
             throws ClassNotFoundException, IOException {
         ArrayList<String> arr = new ArrayList<String>();
-        Set<Class<?>> set = getClasspathClasses(context, "com.asdar.geofence.actionrunner");
-        Iterator i = set.iterator();
-        while (i.hasNext()) {
-            Class<?> c = (Class<?>) i.next();
-                try {
-                    arr.add(((Action) (c.newInstance())).getDescription());
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-        }
+        ArrayList<Action> set = getActionClasses(context);
+       for (Action a : set){
+           arr.add(a.getDescription());
+       }
         return arr.toArray(new String[0]);
     }
 
