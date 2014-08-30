@@ -32,6 +32,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.commonsware.cwac.merge.MergeAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.Geofence;
@@ -67,6 +68,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     private ListView exitListView;
     private ArrayList<Action> exitActionList;
     private ActionAdapter exitAdapter;
+    private MergeAdapter m;
 
     public static void cancelLast(){
         actionlist.remove(actionlist.size()-1);
@@ -90,24 +92,16 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         //Enter
         actionlist = new ArrayList<Action>();
         addadapter = new ActionAdapter(getBaseContext(),
-                R.layout.activity_add_actionlist, actionlist);
-        addListView = (ListView) findViewById(R.id.addListViewEnter);
-        addListView.setAdapter(addadapter);
-        TextView enter = new TextView(this);
-        enter.setText("Enter Actions:");
-        enter.setTextSize(15);
-
-        addListView.addHeaderView(enter);
+                R.layout.activity_add_actionlist, actionlist,false);
         //Exit
         exitActionList = new ArrayList<Action>();
         exitAdapter = new ActionAdapter(getBaseContext(),
-                R.layout.activity_add_actionlist, exitActionList);
-        exitListView = (ListView) findViewById(R.id.addListViewExit);
-        exitListView.setAdapter(exitAdapter);
-        TextView exit = new TextView(this);
-        exit.setText("Exit Actions:");
-        exit.setTextSize(15);
-        exitListView.addHeaderView(exit);
+                R.layout.activity_add_actionlist, exitActionList,true);
+        addListView = (ListView) findViewById(R.id.addListViewEnter);
+        m = new MergeAdapter();
+        m.addAdapter(addadapter);
+        m.addAdapter(exitAdapter);
+        addListView.setAdapter(m);
         //Other content setup
         Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -217,6 +211,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                     public void onDismiss(DialogInterface dialogInterface) {
                         addadapter.notifyDataSetChanged();
                         exitAdapter.notifyDataSetChanged();
+                        m.notifyDataSetChanged();
                     }
                 });
                 d.show();

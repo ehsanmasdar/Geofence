@@ -1,50 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true" >
-
+    android:layout_height="match_parent">
+    <ListView
+        android:id="@+id/addListViewEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+    <ListView
+        android:id="@+id/addListViewExit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <Spinner
         android:id="@+id/RadiusAdd"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/AddressAdd"
-        android:layout_alignLeft="@+id/AddressAdd"
-        android:layout_alignParentRight="true"/>
+        android:layout_height="wrap_content" />
 
     <AutoCompleteTextView
         android:id="@+id/AddressAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/Address"
-        android:layout_below="@+id/NameAdd"
-        android:layout_alignLeft="@+id/NameAdd"
-        android:layout_alignParentRight="true"/>
+        android:hint="@string/Address" />
 
     <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/NameAdd"
-            android:hint="@string/newname"
-            android:layout_marginTop="16dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"/>
-
-    <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/addListViewEnter"
-            android:layout_below="@+id/RadiusAdd"
-            android:layout_alignParentLeft="true"
-            android:layout_marginTop="30dp"/>
-    <ListView
+        android:id="@+id/NameAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/addListViewExit"
-        android:layout_below="@+id/addListViewEnter"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="30dp"/>
-</RelativeLayout>
+        android:layout_marginTop="16dp"
+        android:hint="@string/newname" />
+</LinearLayout>

@@ -121,7 +121,6 @@ public class AudioMuteAction extends ActionBarActivity implements Action {
 				bt.setTypeface(Typeface.DEFAULT, 2);
 			}
 		}
-
 		return v;
 	}
 

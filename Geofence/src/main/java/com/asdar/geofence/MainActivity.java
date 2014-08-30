@@ -102,7 +102,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setBackgroundColor(getResources().getColor(android.R.color.background_light));
         mDrawerToggle = new
                 ActionBarDrawerToggle(
                         this,                  /* host Activity */
@@ -136,6 +135,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 R.layout.drawer_list_item, draweritems);
         mDrawerList.setAdapter(draweradapter);
         mDrawerList.setOnItemClickListener(drawerItemClick);
+        mDrawerList.setItemChecked(0,true);
         swapFragment(0);
     }
 
@@ -168,7 +168,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             case 1:
                 if (!(lastitemchecked == 1))/* Map ID = 1, Pos = 2*/ {
                     MapFragment mapFragment = new MapFragment();
-
                     // Insert the fragment by replacing any existing fragment
                     fragmentManager.beginTransaction()
                             .replace(R.id.content_frame, mapFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
@@ -194,8 +193,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, actionFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                 // Highlight the selected item, update the title, and close the
-                // drawer
-                lastitemchecked = -1;
+                // drawerlastitemchecked = -1;
+
                 mDrawerLayout.closeDrawer(mDrawerList);
                 Integer a = i;
                 setTitle(new GeofenceStore(getApplicationContext()).getGeofence(a, getApplicationContext()).getName());
