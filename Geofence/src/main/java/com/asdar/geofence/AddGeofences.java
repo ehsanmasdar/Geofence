@@ -17,6 +17,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -69,9 +70,11 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     private ArrayList<Action> exitActionList;
     private ActionAdapter exitAdapter;
     private MergeAdapter m;
+    private String finalName;
+    private String finalAddress;
 
-    public static void cancelLast(){
-        actionlist.remove(actionlist.size()-1);
+    public static void cancelLast() {
+        actionlist.remove(actionlist.size() - 1);
         refreshAddAdapter();
     }
 
@@ -92,51 +95,17 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         //Enter
         actionlist = new ArrayList<Action>();
         addadapter = new ActionAdapter(getBaseContext(),
-                R.layout.activity_add_actionlist, actionlist,false);
+                R.layout.activity_add_actionlist, actionlist, false);
         //Exit
         exitActionList = new ArrayList<Action>();
         exitAdapter = new ActionAdapter(getBaseContext(),
-                R.layout.activity_add_actionlist, exitActionList,true);
+                R.layout.activity_add_actionlist, exitActionList, true);
         addListView = (ListView) findViewById(R.id.addListViewEnter);
         m = new MergeAdapter();
         m.addAdapter(addadapter);
         m.addAdapter(exitAdapter);
         addListView.setAdapter(m);
         //Other content setup
-        Spinner spinner = (Spinner) findViewById(R.id.RadiusAdd);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.distances_array_metric, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        radius = 100;
-                        break;
-                    case 1:
-                        radius = 250;
-                        break;
-                    case 2:
-                        radius = 500;
-                        break;
-                    case 3:
-                        radius = 750;
-                        break;
-                    case 4:
-                        radius = 1000;
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-        AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-        addressedit.setAdapter(new PlacesAutoCompleteAdapter(getApplicationContext(), R.layout.list_item));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -216,10 +185,9 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                 });
                 d.show();
                 a.onDialogPostCreate(d);
-               if ((actionlist.size() + exitActionList.size())% 2 == 0){
+                if ((actionlist.size() + exitActionList.size()) % 2 == 0) {
                     actionlist.add(a);
-               }
-               else{
+                } else {
                     exitActionList.add(a);
                 }
             }
@@ -233,27 +201,74 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
     }
 
     public void commit() throws IOException {
-        EditText nameedit = (EditText) findViewById(R.id.NameAdd);
-        AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-        Geocoder geo = new Geocoder(this);
-        if (nameedit.getText().length() == 0) {
-            DialogFragment alert = ErrorThrower.newInstance(
-                    "Enter a Name", false);
-            alert.show(getSupportFragmentManager(), "adderror");
-        }
-        else if (addressedit.getText().toString().length() < 1){
-            DialogFragment alert = ErrorThrower.newInstance(
-                    "Enter An Address", false);
-            alert.show(getSupportFragmentManager(), "adderror");
-        }
-        else if ((geo.getFromLocationName(addressedit.getText().toString(), 1) == null) || (geo.getFromLocationName(addressedit.getText().toString(), 1).size() < 1) ){
-            DialogFragment alert = ErrorThrower.newInstance(
-                    "Address not found", false);
-            alert.show(getSupportFragmentManager(), "adderror");
-        }
-        else {
-            new CommitTask().execute();
-        }
+        final Geocoder geo = new Geocoder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View v = inflater.inflate(R.layout.activity_add_confirm, null);
+        final EditText nameedit = (EditText) v.findViewById(R.id.NameAdd);
+        final AutoCompleteTextView addressedit = (AutoCompleteTextView) v.findViewById(R.id.AddressAdd);
+        Spinner spinner = (Spinner) v.findViewById(R.id.RadiusAdd);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.distances_array_metric, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        radius = 100;
+                        break;
+                    case 1:
+                        radius = 250;
+                        break;
+                    case 2:
+                        radius = 500;
+                        break;
+                    case 3:
+                        radius = 750;
+                        break;
+                    case 4:
+                        radius = 1000;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        addressedit.setAdapter(new PlacesAutoCompleteAdapter(getApplicationContext(), R.layout.list_item));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(v);
+        builder.setTitle("Global Settings");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                if (nameedit.getText().length() == 0) {
+                    DialogFragment alert = ErrorThrower.newInstance(
+                            "Enter a Name", false);
+                    alert.show(getSupportFragmentManager(), "adderror");
+                } else if (addressedit.getText().toString().length() < 1) {
+                    DialogFragment alert = ErrorThrower.newInstance(
+                            "Enter An Address", false);
+                    alert.show(getSupportFragmentManager(), "adderror");
+                } else try {
+                    if ((geo.getFromLocationName(addressedit.getText().toString(), 1) == null) || (geo.getFromLocationName(addressedit.getText().toString(), 1).size() < 1)) {
+                        DialogFragment alert = ErrorThrower.newInstance(
+                                "Address not found", false);
+                        alert.show(getSupportFragmentManager(), "adderror");
+                    } else {
+                        //Write out final vars
+                        finalAddress = addressedit.getText().toString();
+                        finalName = nameedit.getText().toString();
+                        new CommitTask().execute();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        builder.create().show();
     }
 
     @Override
@@ -310,14 +325,12 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         @Override
         protected String doInBackground(String[] paramArrayOfString) {
 
-            AutoCompleteTextView addressedit = (AutoCompleteTextView) findViewById(R.id.AddressAdd);
-            EditText namedit = (EditText) findViewById(R.id.NameAdd);
             int startidtemp = 0;
             Editor editor = mPrefs.edit();
             List<Address> s = null;
             try {
                 Geocoder geo = new Geocoder(getBaseContext());
-                s = geo.getFromLocationName(addressedit.getText().toString(), 1);
+                s = geo.getFromLocationName(finalAddress.toString(), 1);
             } catch (IOException e) {
 
                 DialogFragment alert = ErrorThrower.newInstance(
@@ -330,7 +343,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
                     -1);
             SimpleGeofence g = new SimpleGeofence(
                     startidtemp,
-                    namedit.getText().toString(),
+                    finalName,
                     buildAddress(s.get(0)),
                     s.get(0).getLatitude(),
                     s.get(0).getLongitude(),
@@ -349,7 +362,7 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
             }
             //Save exit
             GeofenceUtils.saveExit(exitActionList, editor, startidtemp);
-            for (Action a: exitActionList){
+            for (Action a : exitActionList) {
                 a.commit(getApplicationContext(), startidtemp, true);
             }
             return "";
@@ -371,10 +384,10 @@ public class AddGeofences extends ActionBarActivity implements GooglePlayService
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (dialog == null){
+            if (dialog == null) {
                 this.dialog = new ProgressDialog(AddGeofences.this);
                 this.dialog.setMessage("Creating...");
-                 this.dialog.show();
+                this.dialog.show();
             }
         }
     }
